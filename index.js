@@ -1,5 +1,5 @@
 const readFile = require("./readFile");
-
+const split = require("./split");
 // readFile
 // 	.readDir("./")
 // 	.then(function (e) {
@@ -18,8 +18,11 @@ const readFile = require("./readFile");
 
 async function open() {
 	try {
-		let s =await readFile.readFile("D:\\_ytx\\test_work\\novel-look\\神工.txt");
+		let s =await readFile.readFile("./神工.txt");
 		console.log(s.length);
-	} catch (error) {}
+		split.split(s)
+	} catch (error) {
+		console.log(error);
+	}
 }
 open();

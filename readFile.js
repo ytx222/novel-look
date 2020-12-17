@@ -54,17 +54,18 @@ function openDir(url) {
 
 function readFile(url) {
 	return new Promise(function (resolve, reject) {
-		fs.readFile(url, { encoding: null }, function (err, data) {
+		//{ encoding: "gb2312" },
+		fs.readFile(url,  function (err, data) {
 			if (err) {
 				reject(err);
 				// resolve(""); //也可以返回空字符串?
 			}
-			resolve(data);
+			resolve(data.toString());
 		});
 	});
 }
 
 module.exports = {
-	readDir, readFile
-	
+	readDir,
+	readFile,
 };

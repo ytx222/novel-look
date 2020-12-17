@@ -54,7 +54,7 @@ function openDir(url) {
 
 function readFile(url) {
 	return new Promise(function (resolve, reject) {
-		//{ encoding: "gb2312" },
+		//{ encoding: "gb2312" },       
 		fs.readFile(url,  function (err, data) {
 			if (err) {
 				reject(err);

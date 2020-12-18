@@ -19,7 +19,7 @@ class Novel {
 		}
 		let cur = this.chapterList[index];
 		let next = this.chapterList[index + 1] || { index: Number.MAX_VALUE };
-		let s = this.txt.substring(cur.index, next.index);
+		let s = this.txt.substring(cur.index +cur.s.length+2 , next.index);
 		return { title: cur.s, content: s, size: s.length, index };
 	}
 }
@@ -42,7 +42,9 @@ let novel;
 		let t = novel.getChapter(2);
 		console.log({
 			title: t.title,
-			content: "",
+			// content: "",
+			content: t.content,
+			
 			size: t.size,
 			index: t.index,
 		});

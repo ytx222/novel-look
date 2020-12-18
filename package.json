@@ -1,0 +1,174 @@
+{
+	"name": "novel-look",
+	"displayName": "novel-look",
+	"description": "支持高度自定义操作的看(mo)书(yu)插件",
+	"____搜索关键词": "",
+	"keywords": [
+		"novel",
+		"摸鱼",
+		"txt"
+	],
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.52.0"
+	},
+	"publisher": "ytx",
+	"categories": [
+		"Other"
+	],
+	"____图标": "",
+	"icon": "./src/img/fish.png",
+	"activationEvents": [
+		"onCommand:novel-look.helloWorld"
+	],
+	"main": "./src/extension.js",
+	"contributes": {
+		"____插件配置项": "",
+		"configuration": {
+			"type": "object",
+			"____配置项标题，会显示在vscode的设置页": "",
+			"title": "vscode-plugin-demo",
+			"properties": {
+				"____这里我随便写了2个设置，配置你的昵称": "",
+				"vscodePluginDemo.yourName": {
+					"type": "string",
+					"default": "guest",
+					"description": "你的名字"
+				},
+				"____是否在启动时显示提示": "",
+				"vscodePluginDemo.showTip": {
+					"type": "boolean",
+					"default": true,
+					"description": "是否在每次启动时显示欢迎提示！"
+				}
+			}
+		},
+		"____命令": "",
+		"commands": [
+			{
+				"command": "novel-look.helloWorld",
+				"title": "Hello World"
+			}
+		],
+		"____快捷键绑定": "",
+		"keybindings": [
+			{
+				"command": "extension.sayHello",
+				"key": "ctrl+f10",
+				"mac": "cmd+f10",
+				"when": "editorTextFocus"
+			}
+		],
+		"____菜单": "",
+		"menus": {
+			"____编辑器右键菜单": "",
+			"editor/context": [
+				{
+					"____表示只有编辑器具有焦点时才会在菜单中出现": "",
+					"when": "editorFocus",
+					"command": "extension.sayHello",
+					"____navigation是一个永远置顶的分组，后面的@6是人工进行组内排序": "",
+					"group": "navigation@6"
+				},
+				{
+					"when": "editorFocus",
+					"command": "extension.demo.getCurrentFilePath",
+					"group": "navigation@5"
+				},
+				{
+					"____只有编辑器具有焦点，并且打开的是JS文件才会出现": "",
+					"when": "editorFocus && resourceLangId == javascript",
+					"command": "extension.demo.testMenuShow",
+					"group": "z_commands"
+				},
+				{
+					"command": "extension.demo.openWebview",
+					"group": "navigation"
+				}
+			],
+			"____编辑器右上角图标，不配置图片就显示文字": "",
+			"editor/title": [
+				{
+					"when": "editorFocus && resourceLangId == javascript",
+					"command": "extension.demo.testMenuShow",
+					"group": "navigation"
+				}
+			],
+			"____编辑器标题右键菜单": "",
+			"editor/title/context": [
+				{
+					"when": "resourceLangId == javascript",
+					"command": "extension.demo.testMenuShow",
+					"group": "navigation"
+				}
+			],
+			"____资源管理器右键菜单": "",
+			"explorer/context": [
+				{
+					"command": "extension.demo.getCurrentFilePath",
+					"group": "navigation"
+				},
+				{
+					"command": "extension.demo.openWebview",
+					"group": "navigation"
+				}
+			]
+		},
+		"____自定义新的activitybar图标，也就是左侧侧边栏大的图标": "",
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "beautifulGirl",
+					"title": "看(mo)书(yu)",
+					"icon": "./src/img/fish.png"
+				}
+			]
+		},
+		"____自定义侧边栏内view的实现": "",
+		"views": {
+			"____和viewsContainers 的id对应": "",
+			"这个不太好用啊":"",
+			"beautifulGirl": [
+				{
+					"id": "beautifulGirl1",
+					"name": "国内美女"
+				},
+				{
+					"id": "beautifulGirl2",
+					"name": "国外美女"
+				},
+				{
+					"id": "beautifulGirl3",
+					"name": "人妖"
+				}
+			]
+		}
+	},
+	"____后面这几个应该不用介绍了": "",
+	"license": "SEE LICENSE IN LICENSE.txt",
+	"bugs": {
+		"url": "https://github.com/sxei/vscode-plugin-demo/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/sxei/vscode-plugin-demo"
+	},
+	"____主页": "",
+	"homepage": "https://github.com/sxei/vscode-plugin-demo/blob/master/README.md",
+	"scripts": {
+		"lint": "eslint .",
+		"pretest": "npm run lint",
+		"test": "node ./test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.52.0",
+		"@types/glob": "^7.1.3",
+		"@types/mocha": "^8.0.4",
+		"@types/node": "^12.11.7",
+		"eslint": "^7.15.0",
+		"glob": "^7.1.6",
+		"mocha": "^8.1.3",
+		"typescript": "^4.1.2",
+		"vscode-test": "^1.4.1"
+	}
+}

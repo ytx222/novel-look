@@ -4,7 +4,7 @@ const { match } = require("./config");
 /**
  * 获取一个目录下的所有可能的电子书文件(*.txt)
  * @param {String} url
- * @return {Array<String>} 地址列表
+ * @return {Promise<string[]>} 地址列表
  */
 async function readDir(url) {
 	return new Promise(async function (resolve, reject) {
@@ -33,12 +33,12 @@ async function readDir(url) {
 /**
  * 打开文件夹,获取dir对象
  * @param {*} url String
- * @return {Dir}
+ * @return {Promise<fs.Dir>}
  */
 function openDir(url) {
 	return new Promise((resolve, reject) => {
 		try {
-			let t = fs.opendir(url, (err, dir) => {
+			fs.opendir(url, (err, dir) => {
 				if (err) {
 					reject(err);
 				}

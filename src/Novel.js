@@ -2,7 +2,8 @@ const readFile = require("./readFile");
 const split = require("./split");
 class Novel {
 	constructor(s) {
-		// 不可迭代
+		this.txt = s;
+		// 不可迭代,同时不让报错
 		Object.defineProperty(this, "txt", { value: s });
 		this.chapterList = split.split(s);
 		console.log(this.chapterList);
@@ -19,7 +20,7 @@ class Novel {
 		}
 		let cur = this.chapterList[index];
 		let next = this.chapterList[index + 1] || { index: Number.MAX_VALUE };
-		let s = this.txt.substring(cur.index +cur.s.length+2 , next.index);
+		let s = this.txt.substring(cur.index + cur.s.length + 2, next.index);
 		return { title: cur.s, content: s, size: s.length, index };
 	}
 }
@@ -44,7 +45,7 @@ let novel;
 			title: t.title,
 			// content: "",
 			content: t.content,
-			
+
 			size: t.size,
 			index: t.index,
 		});

@@ -1,4 +1,4 @@
-const readFile = require("./readFile");
+const readFile = require("./file");
 const split = require("./split");
 class Novel {
 	constructor(s) {
@@ -34,22 +34,4 @@ Novel.getNovelByPath = async function (path) {
 	}
 };
 
-let novel;
-(async function () {
-	try {
-		novel = await Novel.getNovelByPath("./神工.txt");
-		console.log(Object.keys(novel));
-		console.log(novel.txt && novel.txt.length);
-		let t = novel.getChapter(2);
-		console.log({
-			title: t.title,
-			// content: "",
-			content: t.content,
-
-			size: t.size,
-			index: t.index,
-		});
-	} catch (error) {
-		console.error(error);
-	}
-})();
+module.exports = Novel;

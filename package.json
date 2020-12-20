@@ -1,8 +1,7 @@
 {
 	"name": "novel-look",
 	"displayName": "novel-look",
-	"description": "支持高度自定义操作的看(mo)书(yu)插件",
-	"____搜索关键词": "",
+	"description": "高性能,支持高度自定义操作的看(mo)书(yu)插件",
 	"keywords": [
 		"novel",
 		"摸鱼",
@@ -16,26 +15,43 @@
 	"categories": [
 		"Other"
 	],
-	"____图标": "",
 	"icon": "./src/img/fish.png",
 	"activationEvents": [
-		"onCommand:novel-look.helloWorld"
+		"激活事件",
+		"onView:novel-look-book",
+		"onCommand:novel-look.helloWorld",
+		"onCommand:novel-look.test"
 	],
 	"main": "./src/extension.js",
 	"contributes": {
-		"____插件配置项": "",
+		"languages": [
+			{
+				"id": "vscode-novel",
+				"extensions": [
+					".vscode-novel"
+				],
+				"aliases": [
+					"小说文件",
+					"\"configuration\": \"./src/json/language-configuration.json\""
+				]
+			}
+		],
+		"grammars": [
+			{
+				"language": "vscode-novel",
+				"scopeName": "source.vscode-novel",
+				"path": "./syntaxes/vscode-novel.tmGrammar.json"
+			}
+		],
 		"configuration": {
 			"type": "object",
-			"____配置项标题，会显示在vscode的设置页": "",
-			"title": "vscode-plugin-demo",
+			"title": "novel-look",
 			"properties": {
-				"____这里我随便写了2个设置，配置你的昵称": "",
 				"vscodePluginDemo.yourName": {
 					"type": "string",
 					"default": "guest",
 					"description": "你的名字"
 				},
-				"____是否在启动时显示提示": "",
 				"vscodePluginDemo.showTip": {
 					"type": "boolean",
 					"default": true,
@@ -43,108 +59,138 @@
 				}
 			}
 		},
-		"____命令": "",
 		"commands": [
 			{
 				"command": "novel-look.helloWorld",
 				"title": "Hello World"
+			},
+			{
+				"command": "novel-look.test",
+				"title": "test"
+			},
+			{
+				"command": "novel-look.refreshFile",
+				"icon": "./src/img/refresh.svg",
+				"enablement": "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\",
+				"title": "刷新"
+			},
+			{
+				"command": "novel-look.show",
+				"icon": "./src/img/refresh.svg",
+				"title": "显示已读章节"
+			},
+			{
+				"command": "novel-look.refreshFile",
+				"icon": "./src/img/refresh.svg",
+				"title": "清空已读章节"
+			},
+			{
+				"command": "novel-look.refreshFile",
+				"icon": "./src/img/refresh.svg",
+				"title": "删除"
+			},
+			{
+				"command": "novel-look.openExplorer",
+				"icon": "./src/img/add.svg",
+				"title": "添加"
+			},
+			{
+				"command": "novel-look.showChapter",
+				"title": "打开本章"
 			}
 		],
-		"____快捷键绑定": "",
 		"keybindings": [
 			{
-				"command": "extension.sayHello",
+				"command": "novel-look.sayHello",
 				"key": "ctrl+f10",
 				"mac": "cmd+f10",
 				"when": "editorTextFocus"
+			},
+			{
+				"command": "novel-look.test",
+				"key": "alt+s",
+				"mac": "alt+f10",
+				"when": "editorTextFocus"
 			}
 		],
-		"____菜单": "",
 		"menus": {
-			"____编辑器右键菜单": "",
 			"editor/context": [
 				{
-					"____表示只有编辑器具有焦点时才会在菜单中出现": "",
 					"when": "editorFocus",
-					"command": "extension.sayHello",
-					"____navigation是一个永远置顶的分组，后面的@6是人工进行组内排序": "",
+					"command": "novel-look.test",
 					"group": "navigation@6"
 				},
 				{
-					"when": "editorFocus",
-					"command": "extension.demo.getCurrentFilePath",
-					"group": "navigation@5"
-				},
-				{
-					"____只有编辑器具有焦点，并且打开的是JS文件才会出现": "",
 					"when": "editorFocus && resourceLangId == javascript",
-					"command": "extension.demo.testMenuShow",
+					"command": "novel-look.test",
 					"group": "z_commands"
-				},
-				{
-					"command": "extension.demo.openWebview",
-					"group": "navigation"
 				}
 			],
-			"____编辑器右上角图标，不配置图片就显示文字": "",
 			"editor/title": [
 				{
 					"when": "editorFocus && resourceLangId == javascript",
-					"command": "extension.demo.testMenuShow",
+					"command": "novel-look.test",
 					"group": "navigation"
 				}
 			],
-			"____编辑器标题右键菜单": "",
 			"editor/title/context": [
 				{
 					"when": "resourceLangId == javascript",
-					"command": "extension.demo.testMenuShow",
+					"command": "novel-look.test",
 					"group": "navigation"
 				}
 			],
-			"____资源管理器右键菜单": "",
 			"explorer/context": [
 				{
-					"command": "extension.demo.getCurrentFilePath",
+					"command": "novel-look.test",
+					"group": "navigation"
+				}
+			],
+			"view/title": [
+				{
+					"command": "novel-look.refreshFile",
 					"group": "navigation"
 				},
 				{
-					"command": "extension.demo.openWebview",
+					"command": "novel-look.openExplorer",
 					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "novel-look.refreshFile"
+				},
+				{
+					"command": "novel-look.showChapter",
+					"when": "viewItem == Book"
 				}
 			]
 		},
-		"____自定义新的activitybar图标，也就是左侧侧边栏大的图标": "",
 		"viewsContainers": {
 			"activitybar": [
 				{
-					"id": "beautifulGirl",
+					"id": "novel-look",
 					"title": "看(mo)书(yu)",
-					"icon": "./src/img/fish.png"
+					"icon": "./src/img/fish.svg"
 				}
 			]
 		},
-		"____自定义侧边栏内view的实现": "",
 		"views": {
-			"____和viewsContainers 的id对应": "",
-			"这个不太好用啊":"",
-			"beautifulGirl": [
+			"novel-look": [
 				{
-					"id": "beautifulGirl1",
-					"name": "国内美女"
-				},
-				{
-					"id": "beautifulGirl2",
-					"name": "国外美女"
-				},
-				{
-					"id": "beautifulGirl3",
-					"name": "人妖"
+					"id": "novel-look-book",
+					"name": "我的书",
+					"contextualTitle": "我的书11"
 				}
 			]
-		}
+		},
+		"viewsWelcome": [
+			{
+				"view": "novel-look-book",
+				"contents": "您还没有电子书,请到指定目录添加电子书\n[打开目录](command:novel-look.openUri)"
+			}
+		]
 	},
-	"____后面这几个应该不用介绍了": "",
 	"license": "SEE LICENSE IN LICENSE.txt",
 	"bugs": {
 		"url": "https://github.com/sxei/vscode-plugin-demo/issues"
@@ -153,7 +199,6 @@
 		"type": "git",
 		"url": "https://github.com/sxei/vscode-plugin-demo"
 	},
-	"____主页": "",
 	"homepage": "https://github.com/sxei/vscode-plugin-demo/blob/master/README.md",
 	"scripts": {
 		"lint": "eslint .",

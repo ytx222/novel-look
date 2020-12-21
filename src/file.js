@@ -100,7 +100,7 @@ async function openUri() {
 	});
 }
 async function openChapter(_path, fileName, content) {
-	let fileUri = vscode.Uri.joinPath(uri, _path, fileName);
+	let fileUri = vscode.Uri.joinPath(uri, _path, fileName+".vscode-novel");
 	fs.writeFile(fileUri.fsPath, content, async function (err) {
 		if (err) {
 			// 如果是没有文件夹错误,则创建

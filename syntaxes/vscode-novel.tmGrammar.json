@@ -1,8 +1,26 @@
 {
-	"scopeName": "source.abc",
+	"scopeName": "source.vscode-novel",
 	"patterns": [
 		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#constants"
+		},
+		{
+			"include": "#operators"
+		},
+		{
+			"include": "#symbols"
+		},
+		{
 			"include": "#expression"
+		},
+		{
+			"include": "#comment-blocks"
+		},
+		{
+			"include": "#comment-lines"
 		}
 	],
 	"repository": {
@@ -37,6 +55,28 @@
 			"patterns": [
 				{
 					"include": "#expression"
+				}
+			]
+		},
+		"comment-lines": {
+			"name": "keyword.control",
+			"begin": "<",
+			"end": ">",
+			"patterns": [
+				{
+					"name": "constant.character",
+					"match": "\\\\."
+				}
+			]
+		},
+		"comment-blocks": {
+			"name": "storage.type",
+			"begin": "\t\t|\t",
+			"end": "end|;",
+			"patterns": [
+				{
+					"name": "constant.character",
+					"match": "\\\\."
 				}
 			]
 		}

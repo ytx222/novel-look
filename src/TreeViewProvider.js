@@ -93,6 +93,9 @@ class Book extends vscode.TreeItem {
 		for (var i = 0; i < arr.length; i++) {
 			let t = arr[i];
 			this.chapterList.push(new Chapter(this, t.s, t.i, t.txtIndex, t.size));
+			if (i <= 4) {
+				console.warn(t.s, t.i, t.txtIndex, t.size);
+			}
 		}
 		return this.chapterList;
 	}
@@ -140,10 +143,11 @@ class Chapter extends vscode.TreeItem {
 	 * @param {Number} size 长度
 	 */
 	constructor(book, label, i, txtIndex, size) {
-		super(label);
+		super(label.trim());
 		this.tooltip = `${this.label}---共${size}字`;
 		this.collapsibleState = 0; // 不可折叠
 		// 4个自己用的
+		this.title = label;
 		this.i = i;
 		this.txtIndex = txtIndex;
 		this.size = size;
@@ -156,14 +160,29 @@ class Chapter extends vscode.TreeItem {
 	 *
 	 */
 	async openThis() {
+		console.log(this.i, this.txtIndex, this.size);
 		await this.getTxt();
-		console.log(this.size, this.txtIndex, this.i);
 		console.log(this.content.length);
-		await file.openChapter("tmp/神工/", this.label,this.content);
+		this.parseChapterTxt()
+		await file.openChapter("tmp/神工/", this.label, this.content);
+	}
+	parseChapterTxt() {
+		let arr = this.content.split("\n");
+
+		let res = [`<${this.label}>`,"<<<<<<<<<<"];
+		arr.forEach(function (item) {
+			item = item.trim();
+			if (item) {
+				res.push(item)
+			}
+		})
+		res.push(">>>>>>>>>>")
+		console.warn(res);
+		this.content=res.join("\n")
 	}
 	async getTxt() {
 		await this.book.getContent();
-		this.content = this.book.txt.substring(this.txtIndex, this.txtIndex+this.size);
+		this.content = this.book.txt.substring(this.txtIndex + this.title.length, this.txtIndex + this.size);
 	}
 }
 exports.command = {};

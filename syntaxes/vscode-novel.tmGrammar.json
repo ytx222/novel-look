@@ -5,18 +5,6 @@
 			"include": "#keywords"
 		},
 		{
-			"include": "#constants"
-		},
-		{
-			"include": "#operators"
-		},
-		{
-			"include": "#symbols"
-		},
-		{
-			"include": "#expression"
-		},
-		{
 			"include": "#comment-blocks"
 		},
 		{

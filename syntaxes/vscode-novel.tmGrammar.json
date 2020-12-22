@@ -71,8 +71,8 @@
 		},
 		"comment-blocks": {
 			"name": "storage.type",
-			"begin": "\t\t|\t",
-			"end": "end|;",
+			"begin": "\t\t|\t|    ",
+			"end": "end|;|\n",
 			"patterns": [
 				{
 					"name": "constant.character",

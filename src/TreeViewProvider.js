@@ -2,6 +2,7 @@ const path = require("path");
 const vscode = require("vscode");
 const file = require("./file");
 const split = require("./split");
+const config = require("./config");
 
 // extends vscode.TreeDataProvider
 exports.Bookrack = class Bookrack {
@@ -93,9 +94,6 @@ class Book extends vscode.TreeItem {
 		for (var i = 0; i < arr.length; i++) {
 			let t = arr[i];
 			this.chapterList.push(new Chapter(this, t.s, t.i, t.txtIndex, t.size));
-			if (i <= 4) {
-				console.warn(t.s, t.i, t.txtIndex, t.size);
-			}
 		}
 		return this.chapterList;
 	}
@@ -160,25 +158,51 @@ class Chapter extends vscode.TreeItem {
 	 *
 	 */
 	async openThis() {
-		console.log(this.i, this.txtIndex, this.size);
+		// console.log(this.i, this.txtIndex, this.size);
 		await this.getTxt();
-		console.log(this.content.length);
-		this.parseChapterTxt()
-		await file.openChapter("tmp/神工/", this.label, this.content);
+		// console.log(this.content.length);
+		if (config.mode === "file") {
+			this.parseChapterTxt_File();
+			await file.openChapter("tmp/神工/", this.label, this.content);
+		} else if (config.mode === "webView") {
+			let lineList=this.parseChapterTxt_WebView();
+			
+		}
 	}
-	parseChapterTxt() {
+	/**
+	 * 处理章节的内容
+	 * lineEnd其实再循环一遍追加可能更合适,但是我这里追求性能,所以直接写一起
+	 * 对于<<<<<<<<<<开始结束标记,不添加indent
+	 * 对>>>>>>>>>>添加额外的解释标记没有意义
+	 */
+	parseChapterTxt_File() {
 		let arr = this.content.split("\n");
-
-		let res = [`<${this.label}>`,"<<<<<<<<<<"];
+		let lineStart = "".padEnd(config.readSetting.lineIndent, " ");
+		let lineEnd = "".padEnd(config.readSetting.lineSpace, "\n");
+		let s = `<${this.label}>${lineEnd}\n<<<<<<<<<<${lineEnd}`;
 		arr.forEach(function (item) {
 			item = item.trim();
 			if (item) {
-				res.push(item)
+				// res.push(lineStart+item + lineEnd);
+				s += lineStart + item + lineEnd;
 			}
-		})
-		res.push(">>>>>>>>>>")
+		});
+		this.content = s + `>>>>>>>>>>`;
+	}
+	/**
+	 * 处理章节的内容,对于webView,不需要太多处理,给他数组就行,剩下的用css解决
+	 */
+	parseChapterTxt_WebView() {
+		let arr = this.content.split("\n");
+		let res = [];
+		arr.forEach(function (item) {
+			item = item.trim();
+			if (item) {
+				res.push(item);
+			}
+		});
 		console.warn(res);
-		this.content=res.join("\n")
+		this.content = res.join("\n");
 	}
 	async getTxt() {
 		await this.book.getContent();

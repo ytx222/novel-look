@@ -1,4 +1,5 @@
 module.exports = {
+	mode:"webView",// file webView
 	match: {
 		novelName: /^.*\.txt$/, //小说名的正则匹配
 
@@ -12,4 +13,10 @@ module.exports = {
 或是您直接将电子书的内容复制到本文件
 目录地址: `,
 	openDirFileName: "README.md",
+	readSetting: {
+		// 阅读设置
+		lineSpace: 3, // 行与行之间以几个换行符分割
+		lineIndent: 4,
+		fontColor: "", //不知道能不能设置
+	},
 };

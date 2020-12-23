@@ -13,7 +13,8 @@ function split(s) {
 	let t;
 	//第一章之前的
 	t = reg.exec(s);
-	let arr = [{ txtIndex: 0, s: "头部", i: 0, size: (t && t.index) || 0 }];
+	// 因为头部这两个字,txtIndex要-2,size+2(因为字符串截取)
+	let arr = [{ txtIndex: -2, s: "头部", i: 0, size: (t && t.index + 2) || 2 }];
 	let i = 0;
 	let lastIndex = 0;
 	console.log(t + "");
@@ -41,7 +42,7 @@ function split(s) {
 	// });
 
 	console.log(arr);
-	console.log([...arr].slice(0,4));
+	console.log([...arr].slice(0, 4));
 	return arr;
 }
 

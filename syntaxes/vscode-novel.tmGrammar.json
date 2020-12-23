@@ -23,7 +23,7 @@
 			]
 		},
 		"letter": {
-			"match": "a|b|c",
+			"match": "class|for|function|任意键",
 			"name": "keyword.letter"
 		},
 		"paren-expression": {
@@ -59,8 +59,8 @@
 		},
 		"comment-blocks": {
 			"name": "storage.type",
-			"begin": "\t\t|\t|    ",
-			"end": "end|;|\n",
+			"begin": "\t\t|\t|    |<<<<<<<<<<",
+			"end": "end|;|>>>>>>>>>>",
 			"patterns": [
 				{
 					"name": "constant.character",

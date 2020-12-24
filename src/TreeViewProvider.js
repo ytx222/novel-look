@@ -3,6 +3,7 @@ const vscode = require("vscode");
 const file = require("./file");
 const split = require("./split");
 const config = require("./config");
+const webView = require("./webView");
 
 // extends vscode.TreeDataProvider
 exports.Bookrack = class Bookrack {
@@ -165,8 +166,8 @@ class Chapter extends vscode.TreeItem {
 			this.parseChapterTxt_File();
 			await file.openChapter("tmp/神工/", this.label, this.content);
 		} else if (config.mode === "webView") {
-			let lineList=this.parseChapterTxt_WebView();
-			
+			let lineList = this.parseChapterTxt_WebView();
+			webView.showChapter();
 		}
 	}
 	/**

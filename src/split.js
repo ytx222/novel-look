@@ -41,8 +41,8 @@ function split(s) {
 	// 	index: Number.MAX_VALUE,
 	// });
 
-	console.log(arr);
-	console.log([...arr].slice(0, 4));
+	// console.log(arr);
+	// console.log([...arr].slice(0, 4));
 	return arr;
 }
 

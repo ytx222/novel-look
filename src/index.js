@@ -26,7 +26,8 @@ let content;
  * @param {vscode.ExtensionContext} _context vscode拓展上下文
  */
 async function init(_context) {
-	console.log("init--index");
+	// console.log("init--index");
+	// console.warn(_context.extensionUri);
 	content = _context;
 	let t = await refreshFile(true);
 	// vscode.window.registerTreeDataProvider("novel-look-book", new Bookrack(t));

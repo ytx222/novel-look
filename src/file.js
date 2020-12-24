@@ -11,13 +11,18 @@ let uri;
  */
 let _fs;
 /**
+ * @type {vscode.ExtensionContext}
+ */
+let context;
+/**
  * 初始化
- * @param {vscode.ExtensionContext} context vscode拓展上下文
+ * @param {vscode.ExtensionContext} _context vscode拓展上下文
  * @return {Promise<String[]>}
  */
-async function init(context) {
+async function init(_context) {
 	console.warn("init----file");
 	// 初始化变量
+	context = _context;
 	uri = context.globalStorageUri;
 	_fs = vscode.workspace.fs;
 	// 先创建一遍,如果已存在,不会做操作
@@ -100,7 +105,7 @@ async function openUri() {
 	});
 }
 async function openChapter(_path, fileName, content) {
-	let fileUri = vscode.Uri.joinPath(uri, _path, fileName+".vscode-novel");
+	let fileUri = vscode.Uri.joinPath(uri, _path, fileName + ".vscode-novel");
 	fs.writeFile(fileUri.fsPath, content, async function (err) {
 		if (err) {
 			// 如果是没有文件夹错误,则创建
@@ -117,15 +122,15 @@ async function openChapter(_path, fileName, content) {
 		await vscode.window.showTextDocument(doc, { preview: false });
 	});
 }
-function createChapterDir(path, fileName,content) {
+function createChapterDir(path, fileName, content) {
 	return new Promise((resolve, reject) => {
 		fs.mkdir(path, { recursive: true }, function (err) {
 			if (err) {
 				vscode.window.showInformationMessage("打开失败,无文件权限?");
 			} else {
-				openChapter(path, fileName, content).then(function (){
+				openChapter(path, fileName, content).then(function () {
 					resolve();
-				})
+				});
 			}
 			// console.warn(err);
 		});
@@ -151,7 +156,37 @@ function readFile(url) {
 		});
 	});
 }
+function getWebViewHtml() {
+	return new Promise((resolve, reject) => {
+		let dirSrc = path.join(uri.fsPath, "/static/");
+		fs.readFile(dirSrc + "webView.html", async function (err, data) {
+			if (err) {
+				// 如果是没有文件夹错误,则创建
+				if (err.code === "ENOENT") {
+					resolve(await initWebViewFile(dirSrc));
+				} else {
+					vscode.window.showInformationMessage("打开失败,");
+				}
+				resolve("");
+				return;
+			}
+			console.log(data.toString());
+			resolve(data.toString());
+		});
+	});
+}
 
+function initWebViewFile(dist) {
+	let src = path.join(context.extensionUri.fsPath, "/src/static/");
+	return new Promise(async (resolve, reject) => {
+		const { createDocs } = require("./copyFile");
+		createDocs(src, dist, async function () {
+			resolve(await getWebViewHtml());
+		});
+	});
+}
+
+// copy("./static/img", "./myNewImg");
 module.exports = {
 	command: {
 		openUri,
@@ -161,4 +196,5 @@ module.exports = {
 	readFile,
 	init,
 	openChapter,
+	getWebViewHtml,
 };

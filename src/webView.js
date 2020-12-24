@@ -1,4 +1,5 @@
 const vscode = require("vscode");
+const file = require("./file");
 const { Bookrack } = require("./TreeViewProvider");
 /**
  * @type {vscode.WebviewPanel}
@@ -9,7 +10,7 @@ let webView;
  */
 async function createWebView() {
 	webView = vscode.window.createWebviewPanel(
-		"catCoding", // 标识webview的类型。在内部使用
+		"novel", // 标识webview的类型。在内部使用
 		"阅读", // 标题
 		vscode.ViewColumn.One, // 编辑器列以显示新的webview面板。
 		{} // Webview选项。稍后将详细介绍这些内容。
@@ -24,8 +25,12 @@ async function createWebView() {
 async function getWebviewContent() {
 	let s = "";
 	// 读取文件,显示
+	s = await file.getWebViewHtml();
+	console.log(s);
+	console.log(s.length);
 	return s;
 }
+
 /**
  * 显示某一章
  */

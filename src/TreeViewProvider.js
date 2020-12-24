@@ -12,7 +12,7 @@ exports.Bookrack = class Bookrack {
 	 */
 	constructor(arr) {
 		this.list = this.parseArr(arr);
-		console.warn("创建书架--", arr);
+		// console.warn("创建书架--", arr);
 	}
 	/**
 	 * @param {string | any[]} arr
@@ -46,7 +46,7 @@ exports.Bookrack = class Bookrack {
 	 */
 	async getChildren(element) {
 		if (!this.list.length) {
-			console.log("getChildren", this.list, element);
+			// console.log("getChildren", this.list, element);
 			vscode.window.showInformationMessage("getChildren--list为空");
 			return Promise.resolve([]);
 		}
@@ -56,7 +56,7 @@ exports.Bookrack = class Bookrack {
 		} else {
 			// 返回某个元素的子元素,在这里必定的书的子元素,章节
 			vscode.window.showInformationMessage("getChildren--获取章节");
-			console.log(element);
+			// console.log(element);
 			let t = await element.getChapterList();
 			return Promise.resolve(t);
 		}
@@ -84,7 +84,6 @@ class Book extends vscode.TreeItem {
 		this.fullPath = fullPath;
 		this.base = base;
 		this.txt = ""; //文件内容,暂时留空
-		console.log("constructor", this.txt);
 		this.chapterList = []; //章节列表,暂时留空
 		this.timer = null;
 	}
@@ -202,7 +201,7 @@ class Chapter extends vscode.TreeItem {
 				res.push(item);
 			}
 		});
-		console.warn(res);
+		// console.warn(res);
 		this.content = res.join("\n");
 	}
 	async getTxt() {
@@ -213,10 +212,10 @@ class Chapter extends vscode.TreeItem {
 exports.command = {};
 
 exports.command.showChapter = async function (e) {
-	console.warn("exports.command.showChapter", e);
+	// console.warn("exports.command.showChapter", e);
 	//是对章执行的命令
 	if (e && e instanceof Chapter) {
-		console.log("showChapter---执行");
+		// console.log("showChapter---执行");
 		// 打开章节
 		e.openThis();
 	} else if (e && e instanceof Book) {

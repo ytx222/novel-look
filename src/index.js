@@ -1,4 +1,4 @@
-const file = require("./file");
+const file = require("./file/file");
 const split = require("./split");
 const Novel = require("./Novel");
 const vscode = require("vscode");

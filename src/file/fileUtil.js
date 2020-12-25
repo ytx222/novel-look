@@ -92,17 +92,7 @@ function openExplorer(url = uri.fsPath) {
 	console.log(url);
 	exec('explorer.exe /e,"' + url + '"');
 }
-function writeFile(path, content) {
-	return new Promise((resolve, reject) => {
-		fs.writeFile(path, content, function (err) {
-			if (err) {
-				reject(err);
-			} else {
-				resolve();
-			}
-		});
-	});
-}
+
 function readFile(url) {
 	return new Promise(function (resolve, reject) {
 		//{ encoding: "gb2312" },
@@ -112,6 +102,20 @@ function readFile(url) {
 				return;
 			}
 			resolve(data.toString());
+		});
+	});
+}
+function writeFile(path, content,createDir=false) {
+	return new Promise((resolve, reject) => {
+		fs.writeFile(path, content, function (err) {
+			if (err) {
+				if (createDir && err.code === "ENOENT") {
+					
+				}
+				reject(err);
+			} else {
+				resolve();
+			}
 		});
 	});
 }
@@ -171,5 +175,5 @@ module.exports = {
 	readFile,
 	init,
 	openChapter,
-	getWebViewHtml,
+	createDir
 };

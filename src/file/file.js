@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { match, ignoreDir, ignoreFileName, openDirReadme, openDirFileName } = require("./config");
+const { match, ignoreDir, ignoreFileName, openDirReadme, openDirFileName } = require("../config");
 const vscode = require("vscode");
 /**
  * @type {vscode.Uri}
@@ -179,7 +179,7 @@ function getWebViewHtml() {
 function initWebViewFile(dist) {
 	let src = path.join(context.extensionUri.fsPath, "/src/static/");
 	return new Promise(async (resolve, reject) => {
-		const { createDocs } = require("./copyFile");
+		const { createDocs } = require("../copyFile");
 		createDocs(src, dist, async function () {
 			resolve(await getWebViewHtml());
 		});

@@ -1,4 +1,4 @@
-const readFile = require("./file");
+const readFile = require("./file/file");
 const split = require("./split");
 class Novel {
 	constructor(s) {

@@ -1,6 +1,6 @@
 const path = require("path");
 const vscode = require("vscode");
-const file = require("./file");
+const file = require("./file/file");
 const split = require("./split");
 const config = require("./config");
 const webView = require("./webView");

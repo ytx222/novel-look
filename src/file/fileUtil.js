@@ -2,34 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { match, ignoreDir, ignoreFileName, openDirReadme, openDirFileName } = require("../config");
 const vscode = require("vscode");
-/**
- * @type {vscode.Uri}
- */
-let uri;
-/**
- * @type {vscode.FileSystem}
- */
-let _fs;
-/**
- * @type {vscode.ExtensionContext}
- */
-let context;
-/**
- * 初始化
- * @param {vscode.ExtensionContext} _context vscode拓展上下文
- * @return {Promise<String[]>}
- */
-async function init(_context) {
-	console.warn("init----file");
-	// 初始化变量
-	context = _context;
-	uri = context.globalStorageUri;
-	_fs = vscode.workspace.fs;
-	// 先创建一遍,如果已存在,不会做操作
-	await _fs.createDirectory(uri);
-	// console.log(typeof uri);
-	return readDir(uri.fsPath);
-}
+const file = require("./file");
 
 /**
  * 获取一个目录下的所有可能的电子书文件(*.txt)
@@ -87,7 +60,7 @@ function getDir(url) {
  * 打开资源管理器
  * @param {*} url
  */
-function openExplorer(url = uri.fsPath) {
+function openExplorer(url = file.uri.fsPath) {
 	var exec = require("child_process").exec;
 	console.log(url);
 	exec('explorer.exe /e,"' + url + '"');
@@ -105,13 +78,31 @@ function readFile(url) {
 		});
 	});
 }
-function writeFile(path, content,createDir=false) {
+function writeFile(_path, content, isCreateDir = false) {
 	return new Promise((resolve, reject) => {
-		fs.writeFile(path, content, function (err) {
+		fs.writeFile(_path, content, async function (err) {
 			if (err) {
-				if (createDir && err.code === "ENOENT") {
-					
+				if (isCreateDir && err.code === "ENOENT") {
+					await createDir(path.resolve(_path), true);
+					// 返回重新调用自身的结果(但是不强制创建文件夹了)
+					resolve(await writeFile(_path, content));
 				}
+				reject(err);
+			} else {
+				resolve();
+			}
+		});
+	});
+}
+/**
+ *
+ * @param {String} path
+ * @param {Boolean} recursive
+ */
+function createDir(path, recursive) {
+	return new Promise((resolve, reject) => {
+		fs.mkdir(path, { recursive }, function (err) {
+			if (err) {
 				reject(err);
 			} else {
 				resolve();
@@ -124,8 +115,8 @@ function writeFile(path, content,createDir=false) {
  * 打开本地拓展文件路径(Uri)
  */
 async function openUri() {
-	let fileUri = vscode.Uri.joinPath(uri, openDirFileName);
-	fs.writeFile(fileUri.fsPath, openDirReadme + uri.path, async function (err) {
+	let fileUri = vscode.Uri.joinPath(file.uri, openDirFileName);
+	fs.writeFile(fileUri.fsPath, openDirReadme + file.uri.path, async function (err) {
 		if (err) {
 			vscode.window.showInformationMessage("打开失败,无文件权限?");
 		}
@@ -136,12 +127,12 @@ async function openUri() {
 	});
 }
 async function openChapter(_path, fileName, content) {
-	let fileUri = vscode.Uri.joinPath(uri, _path, fileName + ".vscode-novel");
+	let fileUri = vscode.Uri.joinPath(file.uri, _path, fileName + ".vscode-novel");
 	fs.writeFile(fileUri.fsPath, content, async function (err) {
 		if (err) {
 			// 如果是没有文件夹错误,则创建
 			if (err.code === "ENOENT") {
-				await createChapterDir(path.join(uri.fsPath, _path), fileName);
+				// await createChapterDir(path.join(file.uri.fsPath, _path), fileName);
 				return;
 			}
 			vscode.window.showInformationMessage("打开失败,无文件权限?");
@@ -153,27 +144,15 @@ async function openChapter(_path, fileName, content) {
 		await vscode.window.showTextDocument(doc, { preview: false });
 	});
 }
-function createDir(path) {
-	return new Promise((resolve, reject) => {
-		fs.mkdir(path, { recursive: true }, function (err) {
-			if (err) {
-				reject(err);
-			} else {
-				resolve();
-			}
-		});
-	});
-}
 
-// copy("./static/img", "./myNewImg");
+/**
+ * 提交关于操作文件的,可复用的代码
+ */
 module.exports = {
-	command: {
-		openUri,
-		openExplorer,
-	},
 	readDir,
+	getDir,
+	openExplorer,
 	readFile,
-	init,
-	openChapter,
-	createDir
+	writeFile,
+	createDir,
 };

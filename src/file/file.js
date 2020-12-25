@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { match, ignoreDir, ignoreFileName, openDirReadme, openDirFileName } = require("../config");
 const vscode = require("vscode");
+const util = require("./fileUtil");
 /**
  * @type {vscode.Uri}
  */
@@ -28,81 +29,20 @@ async function init(_context) {
 	// 先创建一遍,如果已存在,不会做操作
 	await _fs.createDirectory(uri);
 	// console.log(typeof uri);
-	return readDir(uri.fsPath);
+	return util.readDir(uri.fsPath);
 }
 
-/**
- * 获取一个目录下的所有可能的电子书文件(*.txt)
- * @param {String} url
- * @return {Promise<String[]>} 地址列表
- */
-async function readDir(url) {
-	return new Promise(async function (resolve, reject) {
-		try {
-			const dir = await getDir(url);
-			let t;
-			let arr = [];
-			// 读取文件夹下的所有 目录项
-			while ((t = await dir.read())) {
-				//如果是文件夹,
-				if (t.isDirectory()) {
-					if (!ignoreDir.includes(t.name)) {
-						// 将递归读取的结果,直接添加进数组中
-						arr.push(...(await readDir(path.resolve(url, t.name))));
-					}
-				}
-				// 如果是文件,并且名称是合法名称
-				if (t.isFile() && match.novelName.test(t.name) && !ignoreFileName.includes(t.name)) {
-					arr.push(path.resolve(url, t.name));
-				}
-			}
-			dir.close();
-			resolve(arr);
-		} catch (err) {
-			reject(err);
-		}
-	});
-}
-/**
- * 打开文件夹,获取dir对象
- * @param {*} url String
- * @return {Promise<fs.Dir>}
- */
-function getDir(url) {
-	return new Promise((resolve, reject) => {
-		try {
-			fs.opendir(url, (err, dir) => {
-				if (err) {
-					reject(err);
-				}
-				resolve(dir);
-			});
-		} catch (error) {
-			console.error("读取文件夹失败");
-			reject(error);
-		}
-	});
-}
-
-function openExplorer(url = uri.fsPath) {
-	var exec = require("child_process").exec;
-	console.log(url);
-	exec('explorer.exe /e,"' + url + '"');
-}
 /**
  * 打开本地拓展文件路径(Uri)
  */
 async function openUri() {
 	let fileUri = vscode.Uri.joinPath(uri, openDirFileName);
-	fs.writeFile(fileUri.fsPath, openDirReadme + uri.path, async function (err) {
-		if (err) {
-			vscode.window.showInformationMessage("打开失败,无文件权限?");
-		}
-		// 打开未命名文档
-		//  function openTextDocument(options?: { language?: string; content?: string; }):
-		let doc = await vscode.workspace.openTextDocument(fileUri);
-		await vscode.window.showTextDocument(doc, { preview: false });
-	});
+	// 创建文件
+	await util.writeFile(fileUri.fsPath, openDirReadme + uri.path, false);
+	// 创建文档
+	let doc = await vscode.workspace.openTextDocument(fileUri);
+	// 打开文档
+	await vscode.window.showTextDocument(doc, { preview: false });
 }
 async function openChapter(_path, fileName, content) {
 	let fileUri = vscode.Uri.joinPath(uri, _path, fileName + ".vscode-novel");
@@ -187,12 +127,17 @@ function initWebViewFile(dist) {
 }
 
 // copy("./static/img", "./myNewImg");
+/**
+ * file不提供工具方法,只提供和文件相关的,工具方法的封装调用
+ */
 module.exports = {
 	command: {
 		openUri,
-		openExplorer,
+		openExplorer: util.openExplorer,
 	},
-	readDir,
+	uri,
+	_fs,
+	context,
 	readFile,
 	init,
 	openChapter,

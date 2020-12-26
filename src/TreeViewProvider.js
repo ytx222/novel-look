@@ -166,7 +166,7 @@ class Chapter extends vscode.TreeItem {
 			await file.openChapter("tmp/神工/", this.label, this.content);
 		} else if (config.mode === "webView") {
 			let lineList = this.parseChapterTxt_WebView();
-			webView.showChapter();
+			webView.showChapter(this.label, lineList);
 		}
 	}
 	/**
@@ -202,24 +202,24 @@ class Chapter extends vscode.TreeItem {
 			}
 		});
 		// console.warn(res);
-		this.content = res.join("\n");
+		// this.content = res.join("\n");
+		return arr;
 	}
 	async getTxt() {
 		await this.book.getContent();
 		this.content = this.book.txt.substring(this.txtIndex + this.title.length, this.txtIndex + this.size);
 	}
 }
-exports.command = {};
-
-exports.command.showChapter = async function (e) {
-	// console.warn("exports.command.showChapter", e);
-	//是对章执行的命令
-	if (e && e instanceof Chapter) {
-		// console.log("showChapter---执行");
-		// 打开章节
-		e.openThis();
-	} else if (e && e instanceof Book) {
-		// 只有这个不生效
-		e.collapsibleState = 2;
-	}
+exports.command = {
+	async showChapter(e) {
+		//是对章执行的命令
+		if (e && e instanceof Chapter) {
+			// console.log("showChapter---执行");
+			// 打开章节
+			e.openThis();
+		} else if (e && e instanceof Book) {
+			// 对书执行
+			e.collapsibleState = 2;
+		}
+	},
 };

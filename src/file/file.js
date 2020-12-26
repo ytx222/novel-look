@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { match, ignoreDir, ignoreFileName, openDirReadme, openDirFileName } = require("../config");
+const { match, env, ignoreDir, ignoreFileName, openDirReadme, openDirFileName } = require("../config");
 const vscode = require("vscode");
 const util = require("./fileUtil");
 /**
@@ -21,7 +21,7 @@ let context;
  * @return {Promise<String[]>}
  */
 async function init(_context) {
-	console.warn("init----file");
+	// console.warn("init----file");
 	// 初始化变量
 	context = _context;
 	uri = context.globalStorageUri;
@@ -53,6 +53,10 @@ async function openTextDocument(_path, fileName, content, isFromUri = false) {
 
 async function getWebViewHtml() {
 	let dirSrc = path.join(uri.fsPath, "/static/");
+	// 测试环境的话,不使用拓展工作路径的
+	if (env === "dev") {
+		dirSrc = path.join(context.extensionUri.fsPath, "/src/static/");
+	}
 	try {
 		return await util.readFile(dirSrc + "webView.html");
 	} catch (error) {

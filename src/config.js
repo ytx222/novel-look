@@ -1,4 +1,5 @@
 module.exports = {
+	env:"dev",// dev production
 	mode: "webView", // file webView
 	match: {
 		novelName: /^.*\.txt$/, //小说名的正则匹配

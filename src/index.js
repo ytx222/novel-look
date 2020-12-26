@@ -59,7 +59,14 @@ function sayHello() {
 	});
 }
 // function sayHello(){ }
-
+/**
+ * 
+ */
+function getContent () {
+	console.log("get content ");
+	console.warn(content);
+	return content;
+}
 module.exports = {
 	command: {
 		refreshFile,
@@ -69,6 +76,7 @@ module.exports = {
 		...viewCommand,
 	},
 	init: init,
+	getContent
 };
 
 // readFile

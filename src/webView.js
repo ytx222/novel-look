@@ -1,5 +1,5 @@
 const vscode = require("vscode");
-const file = require("./file");
+const file = require("./file/file");
 const { Bookrack } = require("./TreeViewProvider");
 /**
  * @type {vscode.WebviewPanel}

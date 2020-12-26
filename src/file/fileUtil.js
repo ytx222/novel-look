@@ -9,7 +9,7 @@ const file = require("./file");
  * @param {String} url
  * @return {Promise<String[]>} 地址列表
  */
-async function readDir(url) {
+async function readDir(url, isFilter) {
 	return new Promise(async function (resolve, reject) {
 		try {
 			const dir = await getDir(url);
@@ -19,13 +19,16 @@ async function readDir(url) {
 			while ((t = await dir.read())) {
 				//如果是文件夹,
 				if (t.isDirectory()) {
-					if (!ignoreDir.includes(t.name)) {
-						// 将递归读取的结果,直接添加进数组中
-						arr.push(...(await readDir(path.resolve(url, t.name))));
+					// 如果不过滤 或者过滤并且满足条件
+					if (!isFilter || !ignoreDir.includes(t.name)) {
+						// 将递归读取的结果,直接添加进数组中 递归的同时吧是否过滤也传递
+						arr.push(...(await readDir(path.resolve(url, t.name), isFilter)));
 					}
 				}
+				// 如果不过滤 或者过滤并且满足条件
 				// 如果是文件,并且名称是合法名称
-				if (t.isFile() && match.novelName.test(t.name) && !ignoreFileName.includes(t.name)) {
+				// console.warn(t.name, !isFilter, t.isFile() && match.novelName.test(t.name) && !ignoreFileName.includes(t.name));
+				if (!isFilter || (t.isFile() && match.novelName.test(t.name) && !ignoreFileName.includes(t.name))) {
 					arr.push(path.resolve(url, t.name));
 				}
 			}
@@ -56,15 +59,6 @@ function getDir(url) {
 		}
 	});
 }
-/**
- * 打开资源管理器
- * @param {*} url
- */
-function openExplorer(url = file.uri.fsPath) {
-	var exec = require("child_process").exec;
-	console.log(url);
-	exec('explorer.exe /e,"' + url + '"');
-}
 
 function readFile(url) {
 	return new Promise(function (resolve, reject) {
@@ -82,12 +76,14 @@ function writeFile(_path, content, isCreateDir = false) {
 	return new Promise((resolve, reject) => {
 		fs.writeFile(_path, content, async function (err) {
 			if (err) {
+				console.warn(isCreateDir, err.code === "ENOENT");
 				if (isCreateDir && err.code === "ENOENT") {
-					await createDir(path.resolve(_path), true);
+					await createDir(path.dirname(_path), true);
 					// 返回重新调用自身的结果(但是不强制创建文件夹了)
 					resolve(await writeFile(_path, content));
+				} else {
+					reject(err);
 				}
-				reject(err);
 			} else {
 				resolve();
 			}
@@ -151,7 +147,6 @@ async function openChapter(_path, fileName, content) {
 module.exports = {
 	readDir,
 	getDir,
-	openExplorer,
 	readFile,
 	writeFile,
 	createDir,

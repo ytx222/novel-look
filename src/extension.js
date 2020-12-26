@@ -13,8 +13,6 @@ const index = require("./index");
  */
 async function activate(context) {
 	console.log("\n\n拓展激活成功============================================================");
-	// vscode.window.setStatusBarMessage('你好，前端艺术家！');
-
 	// console.log(context.globalState);
 	// console.log(context.globalStoragePath);
 	// console.log(context.globalStorageUri);
@@ -33,7 +31,6 @@ async function activate(context) {
 	for (var item in command) {
 		context.subscriptions.push(vscode.commands.registerCommand("novel-look." + item, command[item]));
 	}
-	// vscode.window.
 	// 测试专用命令
 
 	context.subscriptions.push(
@@ -44,7 +41,6 @@ async function activate(context) {
 			// });
 		})
 	);
-	// console.log("执行完成");
 }
 // exports.activate = activate;
 
@@ -53,18 +49,8 @@ function deactivate() {
 	vscode.window.showInformationMessage("拓展被停用");
 }
 
-function getCurrentFilePath() {}
-function testMenuShow() {}
-function openWebview() {}
-function sayHello() {}
 
 module.exports = {
 	activate,
 	deactivate,
-	demo: {
-		getCurrentFilePath,
-		testMenuShow,
-		openWebview,
-		sayHello,
-	},
 };

@@ -29,101 +29,59 @@ async function init(_context) {
 	// 先创建一遍,如果已存在,不会做操作
 	await _fs.createDirectory(uri);
 	// console.log(typeof uri);
-	return util.readDir(uri.fsPath);
+	return util.readDir(uri.fsPath, true);
 }
 
 /**
  * 打开本地拓展文件路径(Uri)
  */
 async function openUri() {
-	let fileUri = vscode.Uri.joinPath(uri, openDirFileName);
+	await openTextDocument("", openDirFileName, openDirReadme + uri.fsPath, true);
+}
+async function openChapter(_path, fileName, content) {
+	await openTextDocument(_path, fileName + ".vscode-novel", content, true);
+}
+async function openTextDocument(_path, fileName, content, isFromUri = false) {
+	let fileUri = vscode.Uri.joinPath(isFromUri ? uri : null, _path, fileName);
 	// 创建文件
-	await util.writeFile(fileUri.fsPath, openDirReadme + uri.path, false);
+	await util.writeFile(fileUri.fsPath, content, false);
 	// 创建文档
 	let doc = await vscode.workspace.openTextDocument(fileUri);
 	// 打开文档
 	await vscode.window.showTextDocument(doc, { preview: false });
 }
-async function openChapter(_path, fileName, content) {
-	let fileUri = vscode.Uri.joinPath(uri, _path, fileName + ".vscode-novel");
-	fs.writeFile(fileUri.fsPath, content, async function (err) {
-		if (err) {
-			// 如果是没有文件夹错误,则创建
-			if (err.code === "ENOENT") {
-				await createChapterDir(path.join(uri.fsPath, _path), fileName);
-				return;
-			}
-			vscode.window.showInformationMessage("打开失败,无文件权限?");
-			return;
-		}
-		// 打开未命名文档
-		//  function openTextDocument(options?: { language?: string; content?: string; }):
-		let doc = await vscode.workspace.openTextDocument(fileUri);
-		await vscode.window.showTextDocument(doc, { preview: false });
-	});
-}
-function createChapterDir(path, fileName, content) {
-	return new Promise((resolve, reject) => {
-		fs.mkdir(path, { recursive: true }, function (err) {
-			if (err) {
-				vscode.window.showInformationMessage("打开失败,无文件权限?");
-			} else {
-				openChapter(path, fileName, content).then(function () {
-					resolve();
-				});
-			}
-			// console.warn(err);
-		});
-	});
+
+async function getWebViewHtml() {
+	let dirSrc = path.join(uri.fsPath, "/static/");
+	try {
+		return await util.readFile(dirSrc + "webView.html");
+	} catch (error) {
+		await copyDir(path.join(context.extensionUri.fsPath, "/src/static/"), dirSrc);
+		return await util.readFile(dirSrc + "webView.html");
+	}
 }
 
-function readFile(url) {
-	return new Promise(function (resolve, reject) {
-		//{ encoding: "gb2312" },
-		console.warn(Date.now());
-
-		fs.readFile(url, function (err, data) {
-			console.warn(Date.now());
-
-			// console.warn("readFile", err, data);
-			if (err) {
-				reject(err);
-				return;
-				// resolve(""); //也可以返回空字符串?
-			}
-			resolve(data.toString());
-			console.warn(Date.now());
-		});
-	});
+async function copyDir(src, dist) {
+	// let src = path.join(context.extensionUri.fsPath, "/src/static/");
+	// 复制文件夹的逻辑
+	let files = await util.readDir(src);
+	// 这里文件不多,没有必要用多进程同步进行,for循环单进程读写文件即可
+	for (var i = 0; i < files.length; i++) {
+		let toFileUrl = path.join(dist, path.basename(files[i]));
+		// fs.createReadStream(files[i]).pipe(fs.createWriteStream(toFileUrl));
+		// console.warn(toFileUrl);
+		let s = await util.readFile(files[i]);
+		await util.writeFile(toFileUrl, s, true);
+	}
+	// util.createDir(dirSrc,true)
 }
-function getWebViewHtml() {
-	return new Promise((resolve, reject) => {
-		let dirSrc = path.join(uri.fsPath, "/static/");
-		fs.readFile(dirSrc + "webView.html", async function (err, data) {
-			if (err) {
-				// 如果是没有文件夹错误,则创建
-				if (err.code === "ENOENT") {
-					resolve(await initWebViewFile(dirSrc));
-				} else {
-					vscode.window.showInformationMessage("打开失败,");
-				}
-				resolve("");
-				return;
-			}
-			console.log(data.toString());
-			resolve(data.toString());
-		});
-	});
-}
-
-function initWebViewFile(dist) {
-	let src = path.join(context.extensionUri.fsPath, "/src/static/");
-	return new Promise(async (resolve, reject) => {
-		const { createDocs } = require("../copyFile");
-		createDocs(src, dist, async function () {
-			resolve(await getWebViewHtml());
-		});
-	});
+/**
+ * 打开资源管理器
+ * @param {*} url
+ */
+function openExplorer(url = uri.fsPath) {
+	var exec = require("child_process").exec;
+	exec('explorer.exe /e,"' + url + '"');
 }
 
 // copy("./static/img", "./myNewImg");
@@ -133,12 +91,12 @@ function initWebViewFile(dist) {
 module.exports = {
 	command: {
 		openUri,
-		openExplorer: util.openExplorer,
+		openExplorer,
 	},
 	uri,
 	_fs,
 	context,
-	readFile,
+	readFile: util.readFile,
 	init,
 	openChapter,
 	getWebViewHtml,

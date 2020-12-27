@@ -14,8 +14,8 @@ module.exports = {
 	openDirFileName: "README.md",
 	readSetting: {
 		// 阅读设置
-		lineSpace: 2, // 行与行之间以几个换行符分割
-		lineIndent: 4,
+		lineSpace: 1, // 行与行之间以几个换行符分割
+		lineIndent: 2,
 		fontColor: "", //不知道能不能设置
 	},
 };

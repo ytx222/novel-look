@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { match, env, ignoreDir, ignoreFileName, openDirReadme, openDirFileName } = require("../config");
+const { env, openDirReadme, openDirFileName } = require("../config");
 const vscode = require("vscode");
 const util = require("./fileUtil");
 /**
@@ -55,7 +55,8 @@ async function getWebViewHtml() {
 	let dirSrc = path.join(uri.fsPath, "/static/");
 	// 测试环境的话,不使用拓展工作路径的
 	if (env === "dev") {
-		dirSrc = path.join(context.extensionUri.fsPath, "/src/static/");
+		await copyDir(path.join(context.extensionUri.fsPath, "/src/static/"), dirSrc);
+		return await util.readFile(dirSrc + "webView.html");
 	}
 	try {
 		return await util.readFile(dirSrc + "webView.html");
@@ -97,9 +98,11 @@ module.exports = {
 		openUri,
 		openExplorer,
 	},
-	uri,
-	_fs,
-	context,
+	// uri,
+	// _fs,
+	// context,
+	getUrl () { return uri },
+	
 	readFile: util.readFile,
 	init,
 	openChapter,

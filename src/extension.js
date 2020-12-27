@@ -12,7 +12,6 @@ const index = require("./index");
  * @param {vscode.ExtensionContext} context vscode拓展上下文
  */
 async function activate(context) {
-	console.log("\n\n拓展激活成功============================================================");
 	// console.log(context.globalState);
 	// console.log(context.globalStoragePath);
 	// console.log(context.globalStorageUri);

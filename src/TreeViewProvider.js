@@ -4,9 +4,12 @@ const file = require("./file/file");
 const split = require("./split");
 const config = require("./config");
 const webView = require("./webView");
-
+/**
+ * @type {Chapter} 当前显示章节
+ */
+let curChapter = null;
 // extends vscode.TreeDataProvider
-exports.Bookrack = class Bookrack {
+class Bookrack {
 	/**
 	 * @param {any} arr
 	 */
@@ -55,13 +58,14 @@ exports.Bookrack = class Bookrack {
 			return Promise.resolve(this.list);
 		} else {
 			// 返回某个元素的子元素,在这里必定的书的子元素,章节
-			vscode.window.showInformationMessage("getChildren--获取章节");
+			// vscode.window.showInformationMessage("getChildren--获取章节");
 			// console.log(element);
 			let t = await element.getChapterList();
 			return Promise.resolve(t);
 		}
 	}
-};
+}
+
 /**
  * 书
  */
@@ -159,6 +163,7 @@ class Chapter extends vscode.TreeItem {
 	 */
 	async openThis() {
 		// console.log(this.i, this.txtIndex, this.size);
+		curChapter = this;
 		await this.getTxt();
 		// console.log(this.content.length);
 		if (config.mode === "file") {
@@ -197,29 +202,73 @@ class Chapter extends vscode.TreeItem {
 		let res = [];
 		arr.forEach(function (item) {
 			item = item.trim();
-			if (item) {
+			if (item && item.length) {
 				res.push(item);
 			}
 		});
-		// console.warn(res);
-		// this.content = res.join("\n");
-		return arr;
+		return res;
 	}
 	async getTxt() {
 		await this.book.getContent();
 		this.content = this.book.txt.substring(this.txtIndex + this.title.length, this.txtIndex + this.size);
 	}
 }
-exports.command = {
-	async showChapter(e) {
-		//是对章执行的命令
-		if (e && e instanceof Chapter) {
-			// console.log("showChapter---执行");
-			// 打开章节
-			e.openThis();
-		} else if (e && e instanceof Book) {
-			// 对书执行
-			e.collapsibleState = 2;
-		}
+async function showChapter(e) {
+	//是对章执行的命令
+	if (e && e instanceof Chapter) {
+		// console.log("showChapter---执行");
+		// 打开章节
+		e.openThis();
+	} else if (e && e instanceof Book) {
+		// 对书执行
+		e.collapsibleState = 2;
+	}
+}
+async function nextChapter() {
+	changeChapter(1, "下");
+}
+async function prevChapter() {
+	changeChapter(-1, "上");
+}
+/**
+ * 仅限切换
+ */
+async function changeChapter(n, s) {
+	if (curChapter) {
+		let curBook = curChapter.book;
+		let index = curChapter.i;
+		curBook.chapterList[index + n].openThis();
+	} else {
+		vscode.window.showInformationMessage(`未找到${s}一章`);
+	}
+}
+/**
+ * 关闭webview
+ */
+async function closeWebView() {
+	await webView.closeWebView();
+}
+/**
+ * 关闭后重新打开webview
+ */
+async function openWebView() {
+	if (curChapter) {
+		await curChapter.openThis();
+	} else {
+		//FIXME: 读取缓存中的
+		vscode.window.showInformationMessage(`您最近没有打开章节,无法显示`);
+	}
+}
+
+module.exports = {
+	command: {
+		showChapter,
+		nextChapter,
+		prevChapter,
+		closeWebView,
+		openWebView,
 	},
+	Bookrack,
+	nextChapter,
+	prevChapter,
 };

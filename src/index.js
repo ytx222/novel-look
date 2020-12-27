@@ -58,13 +58,11 @@ function sayHello() {
 		console.log("所有命令：", allCommands);
 	});
 }
-// function sayHello(){ }
 /**
- * 
+ * 获取拓展上下文
+ * @return {vscode.ExtensionContext}
  */
 function getContent () {
-	console.log("get content ");
-	console.warn(content);
 	return content;
 }
 module.exports = {

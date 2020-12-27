@@ -1,14 +1,16 @@
-# 简单的说明文件
+# 插件介绍
 
-# 配置项
-- 图标统一E6E6E6
+
+
+
 - Alt+s 显示
-- Alt+s 隐藏
+- Alt+d 隐藏
 - 左右箭头(按键)翻页 
 - 上下按钮距离?
 - 快速翻页按键(快速翻页模式?一次点击翻一页?)
+- 
 12.17
-
+- 图标统一E6E6E6
 https://code.visualstudio.com/api/references/contribution-points#contributes.configuration
 
 对书md5,保留读书的记录,然后不显示已读章节
@@ -19,6 +21,7 @@ https://code.visualstudio.com/api/references/contribution-points#contributes.con
 	删除文件
 	删除列表(不删除文件)
 列表中增加一种类型,文件夹?
+章节预加载和回收内存
 
 
 FIXME: 增加一个 + 用来新增文件(电子书)
@@ -45,4 +48,5 @@ TODO: 章节匹配有bug
 - 验证清除txt节省内存效果 107-81,并且之后有几个时间点不进行内存清理
 	- 所以说,选择一个合适的实际清除txt有必要
 
+FIXME: 最后一章处理逻辑可能不正确
 

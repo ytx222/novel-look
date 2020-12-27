@@ -1,5 +1,43 @@
-body{
-	background: #000;
+body {
+	/* background: #000; */
 
 	font-size: 20px;
+	margin: 20px auto;
+	width: 80%;
+	max-width: calc(100% - 80px);
+}
+.main {
+}
+.header {
+}
+.header .title {
+	text-align: center;
+	font-size: 32px;
+}
+.content div {
+	text-indent: 2em;
+	line-height: 1.4;
+	font-size: 16px;
+	margin-top: 30px;
+}
+
+.footer {
+	margin-top: 50px;
+	width: 100%;
+	display: flex;
+}
+.footer .btn-box {
+	width: 100%;
+	display: flex;
+	justify-content: space-around;
+}
+.footer .btn-box button{
+	flex: 1 1 auto;
+	max-width: 30%;
+	height: 60px;
+	border: 0;
+	font-size: 30px;
+	background: #5c5c5c;
+	color: #e6e6e6;
+	cursor: pointer;
 }

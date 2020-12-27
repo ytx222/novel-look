@@ -97,20 +97,27 @@
 			{
 				"command": "novel-look.showChapter",
 				"title": "打开本章"
+			},
+			{
+				"command": "novel-look.closeWebView",
+				"title": "关闭窗口"
+			},
+			{
+				"command": "novel-look.openWebView",
+				"title": "打开窗口"
 			}
 		],
 		"keybindings": [
 			{
-				"command": "novel-look.sayHello",
-				"key": "ctrl+f10",
-				"mac": "cmd+f10",
-				"when": "editorTextFocus"
+				"command": "novel-look.closeWebView",
+				"key": "alt+d",
+				"mac": "alt+d"
+				
 			},
 			{
-				"command": "novel-look.test",
+				"command": "novel-look.openWebView",
 				"key": "alt+s",
-				"mac": "alt+f10",
-				"when": "editorTextFocus"
+				"mac": "alt+s"
 			}
 		],
 		"menus": {

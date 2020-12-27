@@ -4,8 +4,9 @@
 - Alt+d 隐藏
 - 左右箭头,鼠标前进,后退,滚轮键,翻页 ,
 - 上下箭头滚动一屏(-60px)
-- 双击自动滚屏,自动下一章
 - 
+TODO:
+- 双击自动滚屏,自动下一章
 12.17
 - 图标统一E6E6E6
 https://code.visualstudio.com/api/references/contribution-points#contributes.configuration

@@ -29,6 +29,7 @@ async function activate(context) {
 	// 注册命令
 	let command = index.command;
 	for (var item in command) {
+		console.warn(item,command[item]);
 		context.subscriptions.push(vscode.commands.registerCommand("novel-look." + item, command[item]));
 	}
 	// 测试专用命令

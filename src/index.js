@@ -1,7 +1,7 @@
 const file = require("./file/file");
 const split = require("./split");
 const vscode = require("vscode");
-const { Bookrack, command: viewCommand } = require("./TreeViewProvider");
+const { createTreeView, command: viewCommand } = require("./TreeViewProvider");
 /**
  * @type {vscode.ExtensionContext}
  */
@@ -28,22 +28,12 @@ async function init(_context) {
 	// console.log("init--index");
 	// console.warn(_context.extensionUri);
 	content = _context;
-	let t = await refreshFile(true);
-	// vscode.window.registerTreeDataProvider("novel-look-book", new Bookrack(t));
-	vscode.window.createTreeView("novel-look-book", {
-		// @ts-ignore
-		treeDataProvider: new Bookrack(t),
-	});
+	let fileList =await file.init(content);
+		//await refreshFile(true);
+	createTreeView( fileList)
 }
 
-async function refreshFile(isNotMsg) {
-	let list = await file.init(content);
-	// console.log(list);
-	if (!isNotMsg) {
-		vscode.window.showInformationMessage("刷新完成");
-	}
-	return list;
-}
+
 // 输出一条helloWord
 function helloWorld() {
 	vscode.window.showInformationMessage("Hello World from novel-look!");
@@ -67,7 +57,6 @@ function getContent () {
 }
 module.exports = {
 	command: {
-		refreshFile,
 		helloWorld,
 		sayHello,
 		...file.command,

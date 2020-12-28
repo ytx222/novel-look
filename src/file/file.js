@@ -23,9 +23,9 @@ let context;
 async function init(_context) {
 	// console.warn("init----file");
 	// 初始化变量
-	context = _context;
-	uri = context.globalStorageUri;
-	_fs = vscode.workspace.fs;
+	context = context || _context;
+	uri = uri || context.globalStorageUri;
+	_fs = _fs || vscode.workspace.fs;
 	// 先创建一遍,如果已存在,不会做操作
 	await _fs.createDirectory(uri);
 	// console.log(typeof uri);
@@ -101,8 +101,10 @@ module.exports = {
 	// uri,
 	// _fs,
 	// context,
-	getUrl () { return uri },
-	
+	getUrl() {
+		return uri;
+	},
+
 	readFile: util.readFile,
 	init,
 	openChapter,

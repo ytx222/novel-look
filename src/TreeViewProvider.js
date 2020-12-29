@@ -8,7 +8,7 @@ const webView = require("./webView");
  * @type {Chapter} 当前显示章节
  */
 let curChapter = null;
-let treeView = null;
+
 // extends vscode.TreeDataProvider
 class Bookrack {
 	/**
@@ -35,10 +35,11 @@ class Bookrack {
 	// private _onDidChangeTreeData: vscode.EventEmitter<Dependency | undefined | null | void> = new vscode.EventEmitter<Dependency | undefined | null | void>();
 	// readonly onDidChangeTreeData: vscode.Event<Dependency | undefined | null | void> = this._onDidChangeTreeData.event;
 
-	refresh() {
-		// let t = new vscode.EventEmitter().event;
-		// t.fire()
+	refresh(arr) {
+		this.list = this.parseArr(arr);
+		console.log(this._onDidChangeTreeData);
 		this._onDidChangeTreeData.fire();
+		console.log("this._onDidChangeTreeData    end");
 		// this._onDidChangeTreeData.fire();
 	}
 
@@ -275,18 +276,28 @@ async function openWebView() {
 /*
 	对于treeView的
 */
+
+let treeView = null;
+/**
+ * @type {Bookrack}
+ */
+let bookrack = null;
 function createTreeView(fileList) {
+	console.log("createTreeView 执行");
 	// vscode.window.registerTreeDataProvider("novel-look-book", new Bookrack(t));
+	bookrack = new Bookrack(fileList);
 	treeView = vscode.window.createTreeView("novel-look-book", {
 		// @ts-ignore
-		treeDataProvider: new Bookrack(fileList),
+		treeDataProvider: bookrack,
 	});
 	// treeView.reveal
 }
-async function refreshFile (isNotMsg) {
+async function refreshFile(isNotMsg) {
 	//FIXME: 这里还是可以优化的
-	const index = require('./index');
+	const index = require("./index");
 	let list = await file.init(index.getContent());
+	// console.log(treeView);
+	bookrack.refresh(list);
 	// console.log(list);
 	if (!isNotMsg) {
 		vscode.window.showInformationMessage("刷新完成");
@@ -301,7 +312,7 @@ module.exports = {
 		prevChapter,
 		closeWebView,
 		openWebView,
-		refreshFile,// 刷新treeView显示
+		refreshFile, // 刷新treeView显示
 	},
 	Bookrack,
 	createTreeView,

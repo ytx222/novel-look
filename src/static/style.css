@@ -1,7 +1,8 @@
+html{
+	font-size: 16px;
+}
 body {
 	/* background: #000; */
-
-	font-size: 20px;
 	margin: 20px auto;
 	width: 80%;
 	max-width: calc(100% - 80px);
@@ -17,7 +18,7 @@ body {
 }
 .header .title {
 	text-align: center;
-	font-size: 32px;
+	font-size: 1.6rem;
 }
 .content{
 	flex: 1 1 auto;
@@ -41,10 +42,11 @@ body {
 }
 .footer .btn-box button{
 	flex: 1 1 auto;
-	max-width: 30%;
-	height: 60px;
+	max-width: 12rem;
+	height: 3.6rem;
 	border: 0;
-	font-size: 30px;
+	font-size: 1.6rem;
+	min-width: 9rem;
 	background: #5c5c5c;
 	color: #e6e6e6;
 	cursor: pointer;

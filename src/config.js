@@ -1,5 +1,5 @@
 module.exports = {
-	env:"dev",// dev production
+	env: "dev", // dev production
 	mode: "webView", // file webView
 	match: {
 		novelName: /^.*\.txt$/, //小说名的正则匹配
@@ -12,10 +12,15 @@ module.exports = {
 或是您直接将电子书的内容复制到本文件
 目录地址: `,
 	openDirFileName: "README.md",
+	// 阅读设置
 	readSetting: {
-		// 阅读设置
-		lineSpace: 1, // 行与行之间以几个换行符分割
+		// 文件模式
+		lineSpace: 1, // 行与行之间以几个换行符分割,文件模式生效
+		// webview模式
 		lineIndent: 2,
 		fontColor: "", //不知道能不能设置
+		rootFontSize: 20,
+		titleSize:1.6,
+		zoom: 1,// 0.5 - 5 每次滚动0.1
 	},
 };

@@ -11,12 +11,8 @@ function split(s) {
 	查找版,查找固定字 如第,章等然后获取整行在进行匹配(正则?)
 	*/
 	console.time();
-	let reg = new RegExp("(?=\\s*)第[一二三四五六七八九十百千万零\\d]*章[^\n]*", "g");
-	console.timeEnd();
-	let iterator = s.matchAll(reg);
-	for (const item of iterator) {
-		console.log(item);
-	}
+	let reg = new RegExp("(?:\\s*)第[一二三四五六七八九十百千万零\\d]*章[^\n]*", "g");
+
 	let t;
 	//第一章之前的
 	t = reg.exec(s);
@@ -56,6 +52,7 @@ function split(s) {
 		// });
 		lastItem.size = s.length - lastItem.txtIndex;
 	}
+	console.timeEnd();
 
 	// console.log(arr);
 	// console.log([...arr].slice(0, 4));

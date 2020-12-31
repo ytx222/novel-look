@@ -187,7 +187,7 @@ window.addEventListener("DOMContentLoaded", function () {
 		}
 		// 获取间隔时间
 		function getIntervalTime() {
-			let scrollSpeed = setting.scrollSpeed || 200;
+			let scrollSpeed = setting.scrollSpeed || 120;
 			return Math.round(1000 / scrollSpeed);
 		}
 	}

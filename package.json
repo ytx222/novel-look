@@ -5,17 +5,18 @@
 	"keywords": [
 		"novel",
 		"摸鱼",
-		"txt"
+		"txt",
+		"高性能"
 	],
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.52.0"
 	},
-	"publisher": "ytx",
+	"publisher": "ytx222",
 	"categories": [
 		"Other"
 	],
-	"icon": "./src/img/fish.png",
+	"icon": "src/img/fish.png",
 	"activationEvents": [
 		"激活事件",
 		"onView:novel-look-book",
@@ -129,7 +130,7 @@
 				}
 			},
 			{
-				"command": "novel-look.refreshFile",
+				"command": "novel-look.sayHello",
 				"category": "小说阅读",
 				"icon": "./src/img/refresh.svg",
 				"title": "删除"
@@ -197,7 +198,7 @@
 		"viewsWelcome": [
 			{
 				"view": "novel-look-book",
-				"contents": "您还没有电子书,请到指定目录添加电子书\n[打开目录](command:novel-look.openUri)"
+				"contents": "您还没有电子书,请添加电子书\n[添加](command:novel-look.openUri)"
 			}
 		]
 	},

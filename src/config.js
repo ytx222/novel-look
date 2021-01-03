@@ -11,7 +11,9 @@ module.exports = {
 	ignoreDir: ["tmp", "static"],
 	ignoreFileName: [],
 	openDirReadme: `请将电子书放在本文件所在目录
-您可以在本文件上上方tab栏右键选择"在文件资源管理器中显示"
+您可以在
+	本文件上上方tab栏右键选择"在文件资源管理器中显示"
+	点击上方加号
 或是您直接将电子书的内容复制到本文件
 目录地址: `,
 	openDirFileName: "README.md",

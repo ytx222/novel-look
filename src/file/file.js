@@ -29,7 +29,11 @@ async function init(_context) {
 	// 先创建一遍,如果已存在,不会做操作
 	await _fs.createDirectory(uri);
 	// console.log(typeof uri);
-	return util.readDir(uri.fsPath, true);
+	return await getBookList();
+}
+
+async function getBookList() {
+	return await util.readDir(uri.fsPath, true);
 }
 
 /**
@@ -104,7 +108,7 @@ module.exports = {
 	getUrl() {
 		return uri;
 	},
-
+	getBookList,
 	readFile: util.readFile,
 	init,
 	openChapter,

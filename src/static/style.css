@@ -1,9 +1,10 @@
-html{
+html {
 	font-size: 16px;
 }
 body {
 	/* background: #000; */
-	margin: 20px auto;
+	margin: 0 auto;
+	padding: 20px 0;
 	width: 80%;
 	max-width: calc(100% - 80px);
 }
@@ -20,15 +21,17 @@ body {
 	text-align: center;
 	font-size: 1.6rem;
 }
-.content{
+.content {
 	flex: 1 1 auto;
 }
 .content div {
 	text-indent: 2em;
-	line-height: 1.4;
+	line-height: 1.5;
 	font-size: 16px;
+	/* FIXME: 这个距离,如果修改成2rem 则无法保持当前滚动位置,需要解决办法 */
 	margin-top: 30px;
 }
+
 
 .footer {
 	margin-top: 50px;
@@ -40,7 +43,7 @@ body {
 	display: flex;
 	justify-content: space-around;
 }
-.footer .btn-box button{
+.footer .btn-box button {
 	flex: 1 1 auto;
 	max-width: 12rem;
 	height: 3.6rem;
@@ -50,4 +53,19 @@ body {
 	background: #5c5c5c;
 	color: #e6e6e6;
 	cursor: pointer;
+}
+.footer .btn-box button:first-child {
+	margin-right: 1px;
+}
+
+.zoom{
+	position: fixed;
+	z-index: 99;
+	right: 5px;
+	top: 5px;
+	color: #FFF;
+	font-size: 16px;
+	display: none;
+	opacity: 1;
+	transition: 500ms;
 }

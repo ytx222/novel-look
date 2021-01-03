@@ -19,11 +19,16 @@
 	"activationEvents": [
 		"激活事件",
 		"onView:novel-look-book",
-		"onCommand:novel-look.helloWorld",
 		"onCommand:novel-look.test"
 	],
 	"main": "./src/extension.js",
 	"contributes": {
+		"configurationDefaults": {
+			"[vscode-novel]": {
+				"editor.wordWrap": "on",
+				"editor.quickSuggestions": false
+			}
+		},
 		"languages": [
 			{
 				"id": "vscode-novel",
@@ -62,49 +67,72 @@
 		"commands": [
 			{
 				"command": "novel-look.helloWorld",
-				"title": "Hello World"
+				"category": "小说阅读",
+				"title": "Hello World11111"
 			},
 			{
 				"command": "novel-look.test",
+				"category": "小说阅读",
 				"title": "test"
 			},
 			{
 				"command": "novel-look.refreshFile",
+				"category": "小说阅读",
 				"icon": "./src/img/refresh.svg",
-				"enablement": "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\",
 				"title": "刷新"
 			},
 			{
-				"command": "novel-look.show",
-				"icon": "./src/img/refresh.svg",
-				"title": "显示已读章节"
-			},
-			{
-				"command": "novel-look.refreshFile",
-				"icon": "./src/img/refresh.svg",
-				"title": "清空已读章节"
-			},
-			{
-				"command": "novel-look.refreshFile",
-				"icon": "./src/img/refresh.svg",
-				"title": "删除"
-			},
-			{
 				"command": "novel-look.openExplorer",
+				"category": "小说阅读",
 				"icon": "./src/img/add.svg",
-				"title": "添加"
+				"title": "打开文件目录"
 			},
 			{
 				"command": "novel-look.showChapter",
+				"category": "小说阅读",
 				"title": "打开本章"
 			},
 			{
 				"command": "novel-look.closeWebView",
+				"category": "小说阅读",
 				"title": "关闭窗口"
 			},
 			{
 				"command": "novel-look.openWebView",
+				"category": "小说阅读",
 				"title": "打开窗口"
+			},
+			{
+				"command": "novel-look.showReadChapter",
+				"category": "小说阅读",
+				"icon": "./src/img/refresh.svg",
+				"title": "显示已读章节"
+			},
+			{
+				"command": "novel-look.hideReadChapter",
+				"category": "小说阅读",
+				"icon": "./src/img/refresh.svg",
+				"title": "隐藏已读章节"
+			},
+			{
+				"command": "novel-look.clearReadChapter",
+				"category": "小说阅读",
+				"title": "清空已读章节"
+			},
+			{
+				"command": "extension.sayHello",
+				"title": "Hello World22222",
+				"category": "小说阅读",
+				"icon": {
+					"light": "path/to/light/icon.svg",
+					"dark": "path/to/dark/icon.svg"
+				}
+			},
+			{
+				"command": "novel-look.refreshFile",
+				"category": "小说阅读",
+				"icon": "./src/img/refresh.svg",
+				"title": "删除"
 			}
 		],
 		"keybindings": [
@@ -112,7 +140,6 @@
 				"command": "novel-look.closeWebView",
 				"key": "alt+d",
 				"mac": "alt+d"
-				
 			},
 			{
 				"command": "novel-look.openWebView",
@@ -121,38 +148,6 @@
 			}
 		],
 		"menus": {
-			"editor/context": [
-				{
-					"when": "editorFocus",
-					"command": "novel-look.test",
-					"group": "navigation@6"
-				},
-				{
-					"when": "editorFocus && resourceLangId == javascript",
-					"command": "novel-look.test",
-					"group": "z_commands"
-				}
-			],
-			"editor/title": [
-				{
-					"when": "editorFocus && resourceLangId == javascript",
-					"command": "novel-look.test",
-					"group": "navigation"
-				}
-			],
-			"editor/title/context": [
-				{
-					"when": "resourceLangId == javascript",
-					"command": "novel-look.test",
-					"group": "navigation"
-				}
-			],
-			"explorer/context": [
-				{
-					"command": "novel-look.test",
-					"group": "navigation"
-				}
-			],
 			"view/title": [
 				{
 					"command": "novel-look.refreshFile",
@@ -161,11 +156,19 @@
 				{
 					"command": "novel-look.openExplorer",
 					"group": "navigation"
+				},
+				{
+					"command": "novel-look.showReadChapter",
+					"group": ""
+				},
+				{
+					"command": "novel-look.hideReadChapter",
+					"group": ""
 				}
 			],
 			"view/item/context": [
 				{
-					"command": "novel-look.refreshFile"
+					"command": "novel-look.clearReadChapter"
 				},
 				{
 					"command": "novel-look.showChapter",
@@ -213,14 +216,18 @@
 		"test": "node ./test/runTest.js"
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.52.0",
 		"@types/glob": "^7.1.3",
 		"@types/mocha": "^8.0.4",
-		"@types/node": "^12.11.7",
+		"@types/node": "^12.19.11",
+		"@types/vscode": "^1.52.0",
 		"eslint": "^7.15.0",
 		"glob": "^7.1.6",
 		"mocha": "^8.1.3",
 		"typescript": "^4.1.2",
 		"vscode-test": "^1.4.1"
+	},
+	"dependencies": {
+		"chardet": "^1.3.0",
+		"iconv-lite": "^0.6.2"
 	}
 }

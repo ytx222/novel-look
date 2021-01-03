@@ -1,3 +1,6 @@
+/**
+ * 如果版本更新后这个文件被覆盖了,请自行修改
+ */
 module.exports = {
 	env: "dev", // dev production
 	mode: "webView", // file webView
@@ -20,7 +23,10 @@ module.exports = {
 		lineIndent: 2,
 		fontColor: "", //不知道能不能设置
 		rootFontSize: 20,
-		titleSize:1.6,
-		zoom: 1,// 0.5 - 5 每次滚动0.1
+		titleSize: 1.6,
+		zoom: 1, // 0.5 - 5 每次滚动0.1
+		scrollSpeed: 144, // 自动滚动速度  推荐 72, 96, 120, 144, 168, 192
+		scrollEndTime: 3000, //滚动到章节底部的等待时间
+		scrollStartTime: 3000, // 章节开始时的滚动时间
 	},
 };

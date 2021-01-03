@@ -45,7 +45,13 @@ async function createWebView() {
 	// 消息事件
 	webview.onDidReceiveMessage(onMessage, null, content.subscriptions);
 	// 初始化完成后,设置style
-	postMsg("setting", config.readSetting);
+	setting();
+}
+// 初始化样式设置
+function setting() {
+	let t = config.readSetting;
+	t.zoom = content.globalState.get("zoom", t.zoom);
+	postMsg("setting", t);
 }
 
 /**
@@ -104,6 +110,11 @@ let fn = {
 			console.log(provider[type + "Chapter"]);
 			vscode.window.showInformationMessage(`切换章节操作${type}不存在`);
 		}
+	},
+	zoom(v) {
+		
+		content.globalState.update("zoom", v);
+		// config.readSetting.zoom = v;// 
 	},
 };
 async function onMessage(e) {

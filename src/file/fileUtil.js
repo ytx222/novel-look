@@ -3,6 +3,8 @@ const path = require("path");
 const { match, ignoreDir, ignoreFileName, openDirReadme, openDirFileName } = require("../config");
 const vscode = require("vscode");
 const file = require("./file");
+// 没啥好名字
+const encoding = require('./encoding/index');
 
 /**
  * 获取一个目录下的所有可能的电子书文件(*.txt)
@@ -59,17 +61,49 @@ function getDir(url) {
 		}
 	});
 }
-
-function readFile(url) {
+/**
+ * 读取文件
+ * @param {String} url 地址
+ * @param {Boolean} checkEncoding 是否需要检查编码
+ */
+function readFile(url, checkEncoding = false) {
 	return new Promise(function (resolve, reject) {
 		//{ encoding: "gb2312" },
-		fs.readFile(url, function (err, data) {
+		fs.readFile(url, function (err, buffer) {
 			if (err) {
 				reject(err);
 				return;
 			}
-			resolve(data.toString());
+			if (checkEncoding) {
+				resolve(encoding(buffer))
+			} else {
+				resolve(buffer.toString());
+			}
 		});
+		// 判断编码
+		// fs.readFile(url, function (err, buffer) {
+		// 	let encoding
+		// 	if (buffer[0] == 0xff && buffer[1] == 0xfe) {
+		// 		encoding="ucs2"//unicode
+		// 	} else if (buffer[0] == 0xfe && buffer[1] == 0xff) {
+		// 		encoding="ucs2"//unicode
+		// 	} else if (buffer[0] == 0xef && buffer[1] == 0xbb) {
+		// 		encoding="utf8"
+		// 	} else {
+		// 		// 都不是,则按照gbk
+		// 		// gb2312
+		// 		encoding="ucs-2"
+		// 	}
+		// 	let t=buffer.toString(encoding)
+		// 	console.log(t.substr(0,100));
+		// });
+		// const chardet = require("chardet");
+
+		// chardet.detect(Buffer.from("hello there!"));
+		// // or
+		// chardet.detectFile(url).then(encoding => console.log(encoding));
+		// // or
+		// chardet.detectFileSync("/path/to/file");
 	});
 }
 function writeFile(_path, content, isCreateDir = false) {

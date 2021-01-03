@@ -2,37 +2,25 @@ const file = require("./file/file");
 const split = require("./split");
 const vscode = require("vscode");
 const { createTreeView, command: viewCommand } = require("./TreeViewProvider");
+const { init:initUtil } = require("./util");
 /**
  * @type {vscode.ExtensionContext}
  */
 let content;
 
-// (function () {
-// 	// 解决vscode调试输出函数null
-// 	let l = console.log;
-// 	console.log = function (...parms) {
-// 		if (Object.prototype.toString.call(parms[0]).indexOf("Function") !== -1) {
-// 			// console.dir(...parms);
-// 			l("函数" + parms[0].name, { ...parms[0] }, parms[0].prototype);
-// 		} else {
-// 			l(...parms);
-// 		}
-// 	};
-// 	l("替换console.log完成");
-// })();
 /**
  * 初始化
  * @param {vscode.ExtensionContext} _context vscode拓展上下文
  */
 async function init(_context) {
-	// console.log("init--index");
-	// console.warn(_context.extensionUri);
 	content = _context;
-	let fileList =await file.init(content);
-		//await refreshFile(true);
-	createTreeView( fileList)
+	// 工具类,优先初始化,其他地方很有可能用
+	initUtil(content)
+	let fileList = await file.init(content);
+	createTreeView(fileList, content);
+	// 这个数据是否需要被当前用户的其他设备同步
+	// content.globalState.setKeysForSync(["configuration", "extensions",""]);
 }
-
 
 // 输出一条helloWord
 function helloWorld() {
@@ -52,7 +40,7 @@ function sayHello() {
  * 获取拓展上下文
  * @return {vscode.ExtensionContext}
  */
-function getContent () {
+function getContent() {
 	return content;
 }
 module.exports = {
@@ -63,35 +51,6 @@ module.exports = {
 		...viewCommand,
 	},
 	init: init,
-	getContent
+	getContent,
 };
 
-// readFile
-// 	.readDir("./")
-// 	.then(function (e) {
-// 		console.log(e);
-// 	})
-// 	.catch(function (err) {
-// 		console.error(err);
-// 	});
-
-// .then(function (e) {
-// 	console.log(e && e.length);
-// })
-// .catch(function (err) {
-// 	console.error(err);
-// });
-
-// async function open() {
-// 	try {
-// 		let s = await readFile.readFile("./神工.txt");
-// 		// console.log(s.length);
-// 		split.split(s);
-// 	} catch (error) {
-// 		// console.log(error);
-// 	}
-// }
-// console.time();
-// console.log(Date.now());
-// open();
-// console.timeEnd();

@@ -18,8 +18,8 @@
 	],
 	"icon": "src/img/fish.png",
 	"activationEvents": [
-		"激活事件",
 		"onView:novel-look-book",
+		"onCommand:novel-look.openWebView",
 		"onCommand:novel-look.test"
 	],
 	"main": "./src/extension.js",

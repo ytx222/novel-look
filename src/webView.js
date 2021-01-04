@@ -76,6 +76,9 @@ async function getWebviewContent(url) {
 async function showChapter(title, list) {
 	if (!panel) {
 		await createWebView();
+	} else if (!panel.visible) {
+		// 如果当前webView存在,并且被隐藏了,则显示
+		panel.reveal();
 	}
 	await postMsg("showChapter", { title, list });
 }
@@ -91,7 +94,8 @@ async function postMsg(type, data) {
 			接收消息,以及处理
 ***************************************/
 async function onDidDispose(e) {
-	// 执行0.0
+	
+	// 执行这个的时候webView已经不可用
 	panel = null;
 	console.log("已关闭panel");
 }
@@ -112,9 +116,8 @@ let fn = {
 		}
 	},
 	zoom(v) {
-		
 		content.globalState.update("zoom", v);
-		// config.readSetting.zoom = v;// 
+		// config.readSetting.zoom = v;//
 	},
 };
 async function onMessage(e) {

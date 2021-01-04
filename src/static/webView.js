@@ -9,7 +9,8 @@ window.addEventListener("DOMContentLoaded", function () {
 	// 本地缓存最新章节和样式设置
 	let cache = {};
 	let setting = {};
-	// postMessage,setState,getState
+	// 当前章节的缓存名称
+	let chapterName = "";
 	console.log("webView页面加载完成");
 	let fn = {
 		undefined() {
@@ -34,8 +35,12 @@ window.addEventListener("DOMContentLoaded", function () {
 		showChapter(data) {
 			setCache("showChapter", data);
 			console.warn("开始显示章节", data.title);
+
 			render(data.title, data.list);
 			window.scrollTo(0, 0);
+			// 如果有缓存的滚动高度
+			chapterName = "catch_" + data.title;
+			readScroll();
 		},
 	};
 	window.addEventListener("message", function (e) {
@@ -264,6 +269,10 @@ window.addEventListener("DOMContentLoaded", function () {
 					// 如果处于自动滚屏状态,则可以用这个进行滚屏,
 					// 如果不处于自动滚屏状态,这样滚动会使其进入自动滚屏状态,也有可能与当前计时器逻辑相冲突
 					scroll(e.wheelDelta * -1);
+				} else {
+					// 记录当前滚动高度,并存储
+					saveScroll();
+					console.warn(cache);
 				}
 
 				//判断浏览器IE，谷歌滑轮事件
@@ -277,6 +286,21 @@ window.addEventListener("DOMContentLoaded", function () {
 				// }
 				// console.log(e.wheelDelta);
 			}
+		}
+	}
+
+	function saveScroll(scroll = window.scrollY, isPostMsg = false) {
+		window.localStorage.setItem(chapterName, scroll);
+		console.warn(window.localStorage.getItem(chapterName), chapterName);
+		if (isPostMsg) {
+			//
+		}
+	}
+	function readScroll() {
+		let t = window.localStorage.getItem(chapterName);
+		console.warn("readScroll", t, chapterName);
+		if (t) {
+			window.scrollTo(0, t);
 		}
 	}
 

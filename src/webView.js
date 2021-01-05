@@ -3,7 +3,9 @@ const file = require("./file/file");
 
 const path = require("path");
 const config = require("./config");
+const { getState, setState } = require("./util");
 
+let saveScroll = {};
 /**
  * @type {vscode.ExtensionContext}
  */
@@ -45,13 +47,16 @@ async function createWebView() {
 	// 消息事件
 	webview.onDidReceiveMessage(onMessage, null, content.subscriptions);
 	// 初始化完成后,设置style
-	setting();
+	initWebView();
 }
 // 初始化样式设置
-function setting() {
+function initWebView() {
 	let t = config.readSetting;
 	t.zoom = content.globalState.get("zoom", t.zoom);
 	postMsg("setting", t);
+	saveScroll = getState("saveScroll", {});
+	// console.warn("initWebView",saveScroll);
+	// postMsg("readScroll", saveScroll);
 }
 
 /**
@@ -75,7 +80,11 @@ async function getWebviewContent(url) {
  */
 async function showChapter(title, list) {
 	if (!panel) {
+		// 初次显示webView,则需要初始化显示滚动高度
 		await createWebView();
+		await postMsg("showChapter", { title, list });
+		await postMsg("readScroll", saveScroll);
+		return;
 	} else if (!panel.visible) {
 		// 如果当前webView存在,并且被隐藏了,则显示
 		panel.reveal();
@@ -94,7 +103,6 @@ async function postMsg(type, data) {
 			接收消息,以及处理
 ***************************************/
 async function onDidDispose(e) {
-	
 	// 执行这个的时候webView已经不可用
 	panel = null;
 	console.log("已关闭panel");
@@ -118,6 +126,16 @@ let fn = {
 	zoom(v) {
 		content.globalState.update("zoom", v);
 		// config.readSetting.zoom = v;//
+	},
+	/**
+	 * 保存滚动高度
+	 * @param {Object} data
+	 * @param {String} data.key
+	 * @param {Number} data.value
+	 */
+	saveScroll(data) {
+		saveScroll[data.key] = data.value;
+		setState("saveScroll", saveScroll);
 	},
 };
 async function onMessage(e) {

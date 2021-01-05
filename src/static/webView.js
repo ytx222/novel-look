@@ -11,7 +11,6 @@ window.addEventListener("DOMContentLoaded", function () {
 	let setting = {};
 	// 当前章节的缓存名称
 	let chapterName = "";
-	console.log("webView页面加载完成");
 	let fn = {
 		undefined() {
 			console.error("webView端找不到处理程序,无法执行");
@@ -33,19 +32,27 @@ window.addEventListener("DOMContentLoaded", function () {
 		},
 		/*显示章节*/
 		showChapter(data) {
-			setCache("showChapter", data);
 			console.warn("开始显示章节", data.title);
-
+			chapterName = "catch_" + data.title;
+			setCache("showChapter", data);
 			render(data.title, data.list);
 			window.scrollTo(0, 0);
 			// 如果有缓存的滚动高度
-			chapterName = "catch_" + data.title;
-			readScroll();
+
+			// !isRestore&&fn.readScroll();
+		},
+		readScroll(data) {
+			let t = data[chapterName] || 0;
+			if (t) {
+				window.scrollTo(0, t);
+				saveScroll(t,false);
+			}
 		},
 	};
 	window.addEventListener("message", function (e) {
 		let data = e.data.data;
 		let type = e.data.type;
+
 		fn[type](data);
 	});
 	/**********************************
@@ -162,7 +169,7 @@ window.addEventListener("DOMContentLoaded", function () {
 		let h = document.documentElement.clientHeight - 60;
 		window.scrollTo(0, cur + h * direction);
 	}
-
+	// 滚屏,滚轮相关
 	{
 		let scrollType = 0; // 0未滚动 1等待结束  2等待开始  3正在滚动
 		let timer = {
@@ -172,6 +179,7 @@ window.addEventListener("DOMContentLoaded", function () {
 		let num = 0; // 当前滚动高度
 		let h = 0; // 窗口高度
 		let max = 0; // 窗口最大高度
+		let lastScrollY = 0;
 		window.ondblclick = function () {
 			// 用户手动触发的
 			autoScrollScreen();
@@ -180,7 +188,6 @@ window.addEventListener("DOMContentLoaded", function () {
 		 * 自动滚屏
 		 */
 		function autoScrollScreen() {
-			// console.warn("autoScrollScreen");
 			clearTimeout(timer.toggle);
 			clearInterval(timer.scroll);
 			// 如果当前非滚屏状态,则进入滚屏状态
@@ -203,6 +210,10 @@ window.addEventListener("DOMContentLoaded", function () {
 			window.scrollTo(0, num);
 			if (num > max - h) {
 				scrollEnd();
+			} else if (num > lastScrollY + 200) { 
+				// 每200高度,保存一次当前滚动高度
+				lastScrollY = num;
+				saveScroll(num)
 			}
 		}
 		function scrollEnd() {
@@ -232,6 +243,7 @@ window.addEventListener("DOMContentLoaded", function () {
 		{
 			let el = document.querySelector(".zoom");
 			let timer = 0;
+			let scrollEndTimer = 0;
 			function showZoom(size, zoom) {
 				el.innerText = `${size}px ${(zoom * 100).toFixed(0)}%`;
 				el.style.display = "block";
@@ -247,7 +259,6 @@ window.addEventListener("DOMContentLoaded", function () {
 			//滚动滑轮触发scrollFunc方法
 			document.onmousewheel = scrollFunc;
 			function scrollFunc(e) {
-				// console.log(e);
 				// 如果是ctrl+滚轮,则放大或缩小显示
 				if (e.ctrlKey) {
 					// 先计算出新的缩放比例
@@ -271,41 +282,38 @@ window.addEventListener("DOMContentLoaded", function () {
 					scroll(e.wheelDelta * -1);
 				} else {
 					// 记录当前滚动高度,并存储
-					saveScroll();
-					console.warn(cache);
+					clearTimeout(scrollEndTimer);
+					scrollEndTimer = setTimeout(saveScroll, 300);
 				}
-
-				//判断浏览器IE，谷歌滑轮事件
-				// if (e.wheelDelta > 0) {
-				// 	//当滑轮向上滚动时
-				// 	// console.log("滑轮向上滚动");
-				// }
-				// if (e.wheelDelta < 0) {
-				// 	//当滑轮向下滚动时
-				// 	// console.log("滑轮向下滚动");
-				// }
-				// console.log(e.wheelDelta);
+				// if (e.wheelDelta > 0) { }
+				// if (e.wheelDelta < 0) { }
 			}
+			// function scrollEnd() { saveScroll(); }
 		}
 	}
 
-	function saveScroll(scroll = window.scrollY, isPostMsg = false) {
-		window.localStorage.setItem(chapterName, scroll);
-		console.warn(window.localStorage.getItem(chapterName), chapterName);
+	function saveScroll(scroll = window.scrollY, isPostMsg = true) {
+		setCache("readScroll", { [chapterName]: scroll });
+		// console.warn("save_Scroll", scroll);
 		if (isPostMsg) {
 			//
+			postMsg("saveScroll", { key: chapterName, value: scroll });
 		}
 	}
-	function readScroll() {
-		let t = window.localStorage.getItem(chapterName);
-		console.warn("readScroll", t, chapterName);
-		if (t) {
-			window.scrollTo(0, t);
-		}
-	}
+	// function readScroll() {
+	// 	let t = window.localStorage.getItem(chapterName);
+	// 	console.warn("readScroll", t, chapterName);
+	// 	if (t) {
+	// 		window.scrollTo(0, t);
+	// 	}
+	// }
 
 	// 发送消息
-	function postMsg(type, data) {
+	function postMsg (type, data) {
+		//切换章节时,清除当前章节的缓存滚动高度
+		if (type === "chapterToggle") {
+			saveScroll(0)
+		}
 		vscode.postMessage({ type, data });
 	}
 });

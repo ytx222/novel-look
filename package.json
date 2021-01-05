@@ -8,7 +8,7 @@
 		"txt",
 		"高性能"
 	],
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"engines": {
 		"vscode": "^1.52.0"
 	},

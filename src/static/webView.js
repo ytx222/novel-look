@@ -31,21 +31,23 @@ window.addEventListener("DOMContentLoaded", function () {
 			// }`);
 		},
 		/*显示章节*/
-		showChapter(data) {
-			console.warn("开始显示章节", data.title);
+		showChapter (data) {
+			// 拦截重复的显示
+			if (data.title === (cache.showChapter && cache.showChapter.title)) {
+				return;
+			}
 			chapterName = "catch_" + data.title;
 			setCache("showChapter", data);
 			render(data.title, data.list);
 			window.scrollTo(0, 0);
-			// 如果有缓存的滚动高度
-
-			// !isRestore&&fn.readScroll();
+			console.warn("开始显示章节", data.title, cache.showChapter.title);
 		},
 		readScroll(data) {
+			console.warn("readScroll");
 			let t = data[chapterName] || 0;
 			if (t) {
 				window.scrollTo(0, t);
-				saveScroll(t,false);
+				saveScroll(t, false);
 			}
 		},
 	};
@@ -210,10 +212,10 @@ window.addEventListener("DOMContentLoaded", function () {
 			window.scrollTo(0, num);
 			if (num > max - h) {
 				scrollEnd();
-			} else if (num > lastScrollY + 200) { 
+			} else if (num > lastScrollY + 200) {
 				// 每200高度,保存一次当前滚动高度
 				lastScrollY = num;
-				saveScroll(num)
+				saveScroll(num);
 			}
 		}
 		function scrollEnd() {
@@ -309,10 +311,10 @@ window.addEventListener("DOMContentLoaded", function () {
 	// }
 
 	// 发送消息
-	function postMsg (type, data) {
+	function postMsg(type, data) {
 		//切换章节时,清除当前章节的缓存滚动高度
 		if (type === "chapterToggle") {
-			saveScroll(0)
+			saveScroll(0);
 		}
 		vscode.postMessage({ type, data });
 	}

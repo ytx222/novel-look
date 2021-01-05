@@ -84,7 +84,7 @@ async function showChapter(title, list) {
 		await createWebView();
 		await postMsg("showChapter", { title, list });
 		await postMsg("readScroll", saveScroll);
-		return;
+		
 	} else if (!panel.visible) {
 		// 如果当前webView存在,并且被隐藏了,则显示
 		panel.reveal();

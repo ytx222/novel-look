@@ -78,13 +78,13 @@ async function getWebviewContent(url) {
 /**
  * 显示某一章
  */
-async function showChapter(title, list) {
+async function showChapter (title, list) {
 	if (!panel) {
 		// 初次显示webView,则需要初始化显示滚动高度
 		await createWebView();
 		await postMsg("showChapter", { title, list });
 		await postMsg("readScroll", saveScroll);
-		
+		return;
 	} else if (!panel.visible) {
 		// 如果当前webView存在,并且被隐藏了,则显示
 		panel.reveal();
@@ -93,7 +93,7 @@ async function showChapter(title, list) {
 }
 /**
  * 发送消息
- * @param {String} type 操作类型  showChapter
+ * @param {String} type 操作类型  
  * @param {Object} data  数据
  */
 async function postMsg(type, data) {

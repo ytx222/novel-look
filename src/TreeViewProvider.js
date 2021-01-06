@@ -124,13 +124,19 @@ class Book extends vscode.TreeItem {
 		this.fullPath = fullPath;
 		this.base = base;
 		this.txt = ""; //文件内容,暂时留空
+		/**
+		 * @type {Chapter[]}
+		 */
 		this.chapterList = []; //章节列表,暂时留空
 		this.timer = null;
 		// 已读章节
 		this.readList = getState("book_" + label, []);
 	}
-	// 获取这本书的章节内容
+	// 获取这本书的章节内容,这个是获取章节列表的最佳方式
 	async getChapterList() {
+		if (this.chapterList && this.chapterList.length) {
+			return this.chapterList;
+		}
 		await this.getContent();
 		let arr = split.split(this.txt);
 		this.chapterList = arr.map((t, i) => {
@@ -228,6 +234,8 @@ class Chapter extends vscode.TreeItem {
 			await file.openChapter("tmp/神工/", this.label, this.content);
 		} else if (config.mode === "webView") {
 			let lineList = this.parseChapterTxt_WebView();
+			// 缓存最后打开的章节
+			setState("lastOpenChapter", { title: this.label, i: this.i, bookName: this.book.label });
 			webView.showChapter(this.label, lineList);
 		}
 	}
@@ -321,13 +329,36 @@ async function closeWebView() {
 }
 /**
  * 关闭后重新打开webview
+ * 如果有缓存的(本次拓展启动后有打开章节),则直接打开
+ * 如果没有,则尝试读取存储的记录
  */
 async function openWebView() {
 	if (curChapter) {
 		await curChapter.openThis();
 	} else {
-		//FIXME: 读取缓存中的
-		vscode.window.showInformationMessage(`您最近没有打开章节,无法显示`);
+		// 读取缓存中的
+		vscode.window.showInformationMessage(`正在打开`);
+		let data = getState("lastOpenChapter");
+		if (data && data.bookName) {
+			// 找到那本书
+			for (var i = 0; i < bookrack.list.length; i++) {
+				if (bookrack.list[i].label === data.bookName) {
+					// 防止在没有获取书内容的时候查找章节
+					let book = bookrack.list[i];
+					await book.getChapterList();
+					let ChapterList = book.chapterList;
+					let chapter = ChapterList[data.i];
+					// 判断章节是否正确(不一定有必要,但是保险起见)
+					if (chapter && chapter.label === data.title) {
+						chapter.openThis();
+					}
+					return;
+				}
+			}
+			vscode.window.showInformationMessage(`未找到对应的章节`);
+		} else {
+			vscode.window.showInformationMessage(`您最近没有打开章节,无法显示`);
+		}
 	}
 }
 

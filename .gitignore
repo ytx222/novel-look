@@ -1,1 +1,4 @@
 .history
+.vscode-test
+.versions
+node_modules/

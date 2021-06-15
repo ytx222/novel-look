@@ -12,7 +12,7 @@ let curChapter = null;
 /**
  * @type {vscode.ExtensionContext}
  */
-let content;
+// let content;
 
 // extends vscode.TreeDataProvider
 class Bookrack {
@@ -44,6 +44,7 @@ class Bookrack {
 	 * @param {String[]} arr
 	 */
 	refresh(arr) {
+		console.warn("执行刷新", arr);
 		// 对比差异,目录顺序是固定的,所以返回的也应该是固定的
 		for (var i = 0; i < this.list.length; i++) {
 			if (this.list[i].fullPath === arr[i]) {
@@ -118,7 +119,7 @@ class Book extends vscode.TreeItem {
 		this.tooltip = `${this.label}`;
 		this.collapsibleState = 1; // 可展开,未展开
 		// this.description = this.version;
-		this.iconPath = path.join(__filename, "..", "img", "book.svg");
+		this.iconPath = path.join(__filename, "..", "img", "book.png");
 		// 自己用的
 		this.i = i;
 		this.fullPath = fullPath;
@@ -128,27 +129,34 @@ class Book extends vscode.TreeItem {
 		 * @type {Chapter[]}
 		 */
 		this.chapterList = []; //章节列表,暂时留空
+		this.showList = []; // 真正的用来显示的列表
 		this.timer = null;
 		// 已读章节
 		this.readList = getState("book_" + label, []);
+		console.warn(label);
+		console.warn(this.readList);
 	}
 	// 获取这本书的章节内容,这个是获取章节列表的最佳方式
 	async getChapterList() {
-		if (this.chapterList && this.chapterList.length) {
-			return this.chapterList;
-		}
+		console.warn(`getChapterList==${this.label}`);
+		console.warn(this.readList);
+		console.time("获取章节内容时间");
 		await this.getContent();
 		let arr = split.split(this.txt);
 		this.chapterList = arr.map((t, i) => {
 			return new Chapter(this, t.s, t.i, t.txtIndex, t.size, this.readList[i] || false);
 		});
+		console.timeEnd("获取章节内容时间");
+
 		// 如果需要隐藏已读章节
+		console.warn("是否隐藏已读章节", !getState("isShowReadChapter", false));
 		if (!getState("isShowReadChapter", false)) {
 			// 多筛选一遍,并不怎么消耗性能,但是可以提高可维护性
-			let t = this.chapterList.filter(e => !e.isRead);
-			return t;
+			this.showList = this.chapterList.filter(e => !e.isRead);
+		} else {
+			this.showList = this.chapterList;
 		}
-		return this.chapterList;
+		return this.showList;
 	}
 
 	//
@@ -174,8 +182,10 @@ class Book extends vscode.TreeItem {
 			vscode.window.showInformationMessage("获取书内容失败,错误信息已打印到控制台");
 		}
 	}
+
 	/**
 	 * 设置某个章节为已读章节
+	 * @param {Number} i 章节下标
 	 */
 	setReadChapter(i) {
 		this.readList[i] = 1; //数据转化为json,所以1应该比true更合适
@@ -229,10 +239,11 @@ class Chapter extends vscode.TreeItem {
 		curChapter = this;
 		await this.getTxt();
 		// console.log(this.content.length);
-		if (config.mode === "file") {
+		let mode = config.get("mode");
+		if (mode === "file") {
 			this.parseChapterTxt_File();
-			await file.openChapter("tmp/神工/", this.label, this.content);
-		} else if (config.mode === "webView") {
+			await file.openChapter("tmp/" + this.book.label + "/", this.label, this.content);
+		} else if (mode === "webView") {
 			let lineList = this.parseChapterTxt_WebView();
 			// 缓存最后打开的章节
 			setState("lastOpenChapter", { title: this.label, i: this.i, bookName: this.book.label });
@@ -247,8 +258,8 @@ class Chapter extends vscode.TreeItem {
 	 */
 	parseChapterTxt_File() {
 		let arr = this.content.split("\n");
-		let lineStart = "".padEnd(config.readSetting.lineIndent * 2, " ");
-		let lineEnd = "".padEnd(config.readSetting.lineSpace, "\n");
+		let lineStart = "".padEnd(config.get("readSetting.lineIndent", 2) * 2, " ");
+		let lineEnd = "".padEnd(config.get("readSetting.lineSpace", 1), "\n");
 		let s = `<${this.label}>${lineEnd}\n<<<<<<<<<<${lineEnd}`;
 		arr.forEach(function (item) {
 			item = item.trim();
@@ -308,7 +319,8 @@ async function prevChapter() {
  * @param {String} s
  * @param {Boolean} isSave 是否保存当前章节为已读章节
  */
-async function changeChapter(n, s, isSave = false) {
+async function changeChapter (n, s, isSave = false) {
+	console.log('changeChapter',n, s, isSave);
 	if (curChapter) {
 		if (isSave) {
 			//记录当前章节为已读
@@ -316,6 +328,8 @@ async function changeChapter(n, s, isSave = false) {
 		}
 		let curBook = curChapter.book;
 		let index = curChapter.i;
+		console.log(index + n);
+		console.log(curBook.chapterList[index + n]);
 		curBook.chapterList[index + n].openThis();
 	} else {
 		vscode.window.showInformationMessage(`未找到${s}一章`);
@@ -367,19 +381,20 @@ async function openWebView() {
 */
 
 let treeView = null;
-/**
- * @type {Bookrack}
- */
 let bookrack = null;
-function createTreeView(fileList, _content) {
-	content = _content;
+
+function createTreeView (fileList) {
+	//, _content
+	// content = _content;
 	// console.log("createTreeView 执行");
-	// vscode.window.registerTreeDataProvider("novel-look-book", new Bookrack(t));
+	// vscode.window.registerTreeDataProvider("novelLookTreeView", new Bookrack(t));
 	bookrack = new Bookrack(fileList);
-	treeView = vscode.window.createTreeView("novel-look-book", {
+	treeView = vscode.window.createTreeView("novelLookTreeView", {
 		// @ts-ignore
 		treeDataProvider: bookrack,
 	});
+	// 报了一个treeView未使用的错,我很不爽
+	if (treeView) return;
 	// treeView.reveal
 }
 async function refreshFile(isNotMsg) {

@@ -26,15 +26,24 @@ function getState(key, def) {
 }
 /**
  * 设置需要同步的值
- * @param  {...String} keys 
+ * @param  {...String} keys
  */
-function setSync(...keys){
+function setSync(...keys) {
 	content.globalState.setKeysForSync(keys);
+}
+
+/**
+ * 获取拓展的安装目录
+ * @returns {vscode.Uri}
+ */
+function getExtensionUri() {
+	return content.extensionUri;
 }
 
 module.exports = {
 	init,
 	setState,
 	getState,
-	setSync
+	setSync,
+	getExtensionUri,
 };

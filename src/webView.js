@@ -3,6 +3,7 @@ const file = require("./file/file");
 
 const path = require("path");
 const config = require("./config");
+const util = require('./util');
 const { getState, setState } = require("./util");
 
 let saveScroll = {};
@@ -41,6 +42,7 @@ async function createWebView() {
 		}
 	);
 	let webview = panel.webview;
+	panel.iconPath=vscode.Uri.joinPath(util.getExtensionUri(),"/src/img/fish2.png")
 	webview.html = await getWebviewContent(url);
 	// 关闭事件
 	panel.onDidDispose(onDidDispose, null, content.subscriptions);
@@ -51,8 +53,10 @@ async function createWebView() {
 }
 // 初始化样式设置
 function initWebView() {
-	let t = config.readSetting;
-	t.zoom = content.globalState.get("zoom", t.zoom);
+	let t = config.get("readSetting");
+	// config.set("readSetting.zoom", v);
+	// t.zoom = t.zoom;
+	//content.globalState.get("zoom", t.zoom);
 	postMsg("setting", t);
 	saveScroll = getState("saveScroll", {});
 	// console.warn("initWebView",saveScroll);
@@ -71,6 +75,24 @@ async function getWebviewContent(url) {
 	// @ts-ignore
 	let result = s.replace(/(@)(.+?)/g, (_m, _$1, $2) => {
 		return panel.webview.asWebviewUri(vscode.Uri.file(path.join(url, $2)));
+
+		let file = vscode.Uri.file(path.join(url, $2));
+		let t = panel.webview.asWebviewUri(file);
+		console.warn(t);
+		// console.warn(t.fsPath);
+		console.warn("" + t);
+		console.warn(t.path);
+		let str = `${t.scheme}://${t.authority}${t.path}`;
+		console.warn(str);
+		// return str;
+		// return t;
+		//
+		let newUrl=`vscode-resource:${t.path}`
+		console.warn(newUrl);
+		return t.path;
+		return newUrl;
+
+
 	});
 	return result;
 }
@@ -78,7 +100,7 @@ async function getWebviewContent(url) {
 /**
  * 显示某一章
  */
-async function showChapter (title, list) {
+async function showChapter(title, list) {
 	if (!panel) {
 		// 初次显示webView,则需要初始化显示滚动高度
 		await createWebView();
@@ -93,7 +115,7 @@ async function showChapter (title, list) {
 }
 /**
  * 发送消息
- * @param {String} type 操作类型  
+ * @param {String} type 操作类型
  * @param {Object} data  数据
  */
 async function postMsg(type, data) {
@@ -102,7 +124,7 @@ async function postMsg(type, data) {
 /**************************************
 			接收消息,以及处理
 ***************************************/
-async function onDidDispose(e) {
+async function onDidDispose() {
 	// 执行这个的时候webView已经不可用
 	panel = null;
 	console.log("已关闭panel");
@@ -124,8 +146,7 @@ let fn = {
 		}
 	},
 	zoom(v) {
-		content.globalState.update("zoom", v);
-		// config.readSetting.zoom = v;//
+		config.set("readSetting.zoom", v);
 	},
 	/**
 	 * 保存滚动高度

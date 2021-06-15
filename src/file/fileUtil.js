@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { match, ignoreDir, ignoreFileName, openDirReadme, openDirFileName } = require("../config");
+const config = require("./../config");
 const vscode = require("vscode");
 const file = require("./file");
 // 没啥好名字
@@ -11,7 +11,10 @@ const encoding = require('./encoding/index');
  * @param {String} url
  * @return {Promise<String[]>} 地址列表
  */
-async function readDir(url, isFilter) {
+async function readDir (url, isFilter) {
+	let ignoreDir = config.get("ignoreDir", [])
+	let ignoreFileName = config.get("ignoreFileName", [])
+	let novelName = new RegExp(config.get("match.novelName"))
 	return new Promise(async function (resolve, reject) {
 		try {
 			const dir = await getDir(url);
@@ -30,7 +33,7 @@ async function readDir(url, isFilter) {
 				// 如果不过滤 或者过滤并且满足条件
 				// 如果是文件,并且名称是合法名称
 				// console.warn(t.name, !isFilter, t.isFile() && match.novelName.test(t.name) && !ignoreFileName.includes(t.name));
-				if (!isFilter || (t.isFile() && match.novelName.test(t.name) && !ignoreFileName.includes(t.name))) {
+				if (!isFilter || (t.isFile() && novelName.test(t.name) && !ignoreFileName.includes(t.name))) {
 					arr.push(path.resolve(url, t.name));
 				}
 			}
@@ -144,18 +147,18 @@ function createDir(path, recursive) {
 /**
  * 打开本地拓展文件路径(Uri)
  */
-async function openUri() {
-	let fileUri = vscode.Uri.joinPath(file.uri, openDirFileName);
-	fs.writeFile(fileUri.fsPath, openDirReadme + file.uri.path, async function (err) {
-		if (err) {
-			vscode.window.showInformationMessage("打开失败,无文件权限?");
-		}
-		// 打开未命名文档
-		//  function openTextDocument(options?: { language?: string; content?: string; }):
-		let doc = await vscode.workspace.openTextDocument(fileUri);
-		await vscode.window.showTextDocument(doc, { preview: false });
-	});
-}
+// async function openUri() {
+// 	let fileUri = vscode.Uri.joinPath(file.uri, openDirFileName);
+// 	fs.writeFile(fileUri.fsPath, openDirReadme + file.uri.path, async function (err) {
+// 		if (err) {
+// 			vscode.window.showInformationMessage("打开失败,无文件权限?");
+// 		}
+// 		// 打开未命名文档
+// 		//  function openTextDocument(options?: { language?: string; content?: string; }):
+// 		let doc = await vscode.workspace.openTextDocument(fileUri);
+// 		await vscode.window.showTextDocument(doc, { preview: false });
+// 	});
+// }
 async function openChapter(_path, fileName, content) {
 	let fileUri = vscode.Uri.joinPath(file.uri, _path, fileName + ".vscode-novel");
 	fs.writeFile(fileUri.fsPath, content, async function (err) {

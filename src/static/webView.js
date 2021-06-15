@@ -1,11 +1,17 @@
 // @ts-nocheck
 window.addEventListener("DOMContentLoaded", function () {
+	// eslint-disable-next-line no-undef
 	const vscode = acquireVsCodeApi();
 	// 元素
 	const el = {
+		main: document.querySelector(".main"),
 		title: document.querySelector(".main .header .title"),
 		content: document.querySelector(".main .content"),
+		navTitle: document.querySelector(".nav .title"),
 	};
+
+	let getScroll = () => el.main.scrollTop;
+	let setScroll = h => el.main.scrollTo(0, h);
 	// 本地缓存最新章节和样式设置
 	let cache = {};
 	let setting = {};
@@ -31,7 +37,7 @@ window.addEventListener("DOMContentLoaded", function () {
 			// }`);
 		},
 		/*显示章节*/
-		showChapter (data) {
+		showChapter(data) {
 			// 拦截重复的显示
 			if (data.title === (cache.showChapter && cache.showChapter.title)) {
 				return;
@@ -39,14 +45,16 @@ window.addEventListener("DOMContentLoaded", function () {
 			chapterName = "catch_" + data.title;
 			setCache("showChapter", data);
 			render(data.title, data.list);
-			window.scrollTo(0, 0);
+			setScroll(0);
+			// window.scrollTo(0, 0);
 			console.warn("开始显示章节", data.title, cache.showChapter.title);
 		},
 		readScroll(data) {
 			console.warn("readScroll");
 			let t = data[chapterName] || 0;
 			if (t) {
-				window.scrollTo(0, t);
+				// window.scrollTo(0, t);
+				setScroll(t);
 				saveScroll(t, false);
 			}
 		},
@@ -54,7 +62,6 @@ window.addEventListener("DOMContentLoaded", function () {
 	window.addEventListener("message", function (e) {
 		let data = e.data.data;
 		let type = e.data.type;
-
 		fn[type](data);
 	});
 	/**********************************
@@ -83,13 +90,13 @@ window.addEventListener("DOMContentLoaded", function () {
 	 */
 	function render(title, lines) {
 		el.title.innerText = title;
+		el.navTitle.innerText = title;
 		let list = el.content.children;
 		el.content.style.display = "none";
 		if (list.length < lines.length) {
 			addLine(lines.length - list.length);
 		}
 		var i = 0;
-		//FIXME:后期考虑优化性能
 		// 比如不能再设置时获取属性,否则必须刷新(回流)
 		// 循环添加数据
 		for (; i < list.length; i++) {
@@ -157,9 +164,24 @@ window.addEventListener("DOMContentLoaded", function () {
 				break;
 		}
 	};
+	// 双击右键下一章
+	var rightBtnTime = 0;
+	window.oncontextmenu = function () {
+		var now = +Date.now();
+		if (rightBtnTime + 500 > now) {
+			postMsg("chapterToggle", "next");
+		}
+		rightBtnTime = now;
+	};
 	document.querySelector(".footer .btn-box .prev").onclick = () => postMsg("chapterToggle", "prev");
 	document.querySelector(".footer .btn-box .next").onclick = () => postMsg("chapterToggle", "next");
-
+	document.querySelector(".nav button.prev").onclick = () => postMsg("chapterToggle", "prev");
+	document.querySelector(".nav button.next").onclick = () => postMsg("chapterToggle", "next");
+	document.querySelector(".nav").ondblclick = function (e) {
+		console.log('nav---ondblclick');
+		e.stopPropagation();
+		return false;
+	};
 	/**
 	 * 上线翻页(一个屏幕)
 	 * @param {Number} direction 方向 1下 -1上
@@ -167,9 +189,11 @@ window.addEventListener("DOMContentLoaded", function () {
 	 */
 	function scrollScreen(direction = 1, event) {
 		event.preventDefault();
-		let cur = window.scrollY;
+		// let cur = window.scrollY;
+		let cur = getScroll();
 		let h = document.documentElement.clientHeight - 60;
-		window.scrollTo(0, cur + h * direction);
+		setScroll(cur + h * direction);
+		// window.scrollTo(0, cur + h * direction);
 	}
 	// 滚屏,滚轮相关
 	{
@@ -207,9 +231,12 @@ window.addEventListener("DOMContentLoaded", function () {
 		// 这个时间如果高于10,则可能会产生滚动一卡一卡的感觉(视觉效果)
 		// 以人眼24帧为标准 72, 96, 120, 144, 168, 192
 		function scroll(v = 1) {
-			max = document.body.scrollHeight;
-			num = window.scrollY + v;
-			window.scrollTo(0, num);
+			// max = document.body.scrollHeight;
+			// num = window.scrollY + v;
+			// window.scrollTo(0, num);
+			max = el.content.scrollHeight;
+			num = getScroll() + v;
+			setScroll(num);
 			if (num > max - h) {
 				scrollEnd();
 			} else if (num > lastScrollY + 200) {
@@ -248,7 +275,7 @@ window.addEventListener("DOMContentLoaded", function () {
 			let scrollEndTimer = 0;
 			function showZoom(size, zoom) {
 				el.innerText = `${size}px ${(zoom * 100).toFixed(0)}%`;
-				el.style.display = "block";
+				el.style.display = "flex";
 				el.style.opacity = 1;
 				clearTimeout(timer);
 				timer = setTimeout(() => {
@@ -271,7 +298,9 @@ window.addEventListener("DOMContentLoaded", function () {
 					if (zoom >= 0.2 && zoom <= 5) {
 						// 保存
 						postMsg("zoom", zoom);
+
 						setting.zoom = zoom;
+						setCache("setting", setting);
 						// 应用
 						document.documentElement.style.fontSize = setting.rootFontSize * zoom + "px";
 						// 显示
@@ -294,7 +323,7 @@ window.addEventListener("DOMContentLoaded", function () {
 		}
 	}
 
-	function saveScroll(scroll = window.scrollY, isPostMsg = true) {
+	function saveScroll(scroll = getScroll(), isPostMsg = true) {
 		setCache("readScroll", { [chapterName]: scroll });
 		// console.warn("save_Scroll", scroll);
 		if (isPostMsg) {

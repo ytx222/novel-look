@@ -72,29 +72,15 @@ async function getWebviewContent(url) {
 	// 读取文件,显示
 	s = await file.getWebViewHtml();
 	// 替换某些特定的值(路径)
-	// @ts-ignore
-	let result = s.replace(/(@)(.+?)/g, (_m, _$1, $2) => {
-		return panel.webview.asWebviewUri(vscode.Uri.file(path.join(url, $2)));
-
-		let file = vscode.Uri.file(path.join(url, $2));
-		let t = panel.webview.asWebviewUri(file);
-		console.warn(t);
-		// console.warn(t.fsPath);
-		console.warn("" + t);
-		console.warn(t.path);
-		let str = `${t.scheme}://${t.authority}${t.path}`;
-		console.warn(str);
-		// return str;
-		// return t;
-		//
-		let newUrl=`vscode-resource:${t.path}`
-		console.warn(newUrl);
-		return t.path;
-		return newUrl;
-
-
+	s = s.replace(/(#csp)/g, (_m, _$1, $2) => {
+		return panel.webview.cspSource;
 	});
-	return result;
+	// @ts-ignore
+	s = s.replace(/(@)(.+?)/g, (_m, _$1, $2) => {
+		console.warn(panel.webview.cspSource);
+		return panel.webview.asWebviewUri(vscode.Uri.file(path.join(url, $2)));
+	});
+	return s;
 }
 
 /**
